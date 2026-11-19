@@ -1,0 +1,434 @@
+openapi: 3.1.0
+info:
+  title: Chess Platform API
+  version: 1.0.0
+  description: >-
+    Sağlayıcıdan bağımsız istemci sözleşmesi. example.invalid yer tutucudur;
+    üretim alan adı değildir. Tarihler UTC ISO 8601 biçimindedir.
+servers:
+  - url: https://api.example.invalid
+    description: Üretim ortamı kurulunca değiştirilecek yer tutucu
+tags:
+  - name: health
+  - name: auth
+  - name: challenges
+  - name: matchmaking
+  - name: matches
+  - name: leaderboards
+paths:
+  /v1/health:
+    get:
+      tags: [health]
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: API is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, apiVersion]
+                properties:
+                  status: { type: string, enum: [ok] }
+                  apiVersion: { type: string, example: '1.0.0' }
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /v1/auth/session:
+    get:
+      tags: [auth]
+      operationId: getSession
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Aktif oturum ve temel oyuncu kimliği
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [player]
+                properties:
+                  player: { $ref: '#/components/schemas/Player' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+    delete:
+      tags: [auth]
+      operationId: revokeSession
+      security:
+        - bearerAuth: []
+      responses:
+        '204': { description: Oturum iptal edildi }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/challenges:
+    post:
+      tags: [challenges]
+      operationId: createChallenge
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateChallengeRequest' }
+      responses:
+        '201':
+          description: Paylaşılabilir, süresi sınırlı davet oluşturuldu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Challenge' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/challenges/{challengeId}:
+    parameters:
+      - $ref: '#/components/parameters/ChallengeId'
+    get:
+      tags: [challenges]
+      operationId: getChallenge
+      security: []
+      responses:
+        '200':
+          description: Davet özeti; yalnızca davet sahibinin paylaşım için seçtiği görünen adını döndürür
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Challenge' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '410': { description: Davetin süresi doldu veya daha önce kabul edildi }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/challenges/{challengeId}/accept:
+    parameters:
+      - $ref: '#/components/parameters/ChallengeId'
+    post:
+      tags: [challenges]
+      operationId: acceptChallenge
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Davet atomik olarak kabul edildi; eşleşen maç oluşturuldu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AcceptedChallenge' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { description: Davet zaten kabul edildi veya oyuncu kendi davetini kabul etti }
+        '410': { description: Davetin süresi doldu }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/matchmaking:
+    post:
+      tags: [matchmaking]
+      operationId: joinMatchmaking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [timeControl]
+              properties:
+                timeControl: { $ref: '#/components/schemas/TimeControl' }
+      responses:
+        '202':
+          description: Sıraya alındı; ticket durumu WebSocket veya GET ile izlenir
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchmakingTicket' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { description: Oyuncunun zaten etkin bir kuyruk bileti var }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/matchmaking/{ticketId}:
+    parameters:
+      - name: ticketId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 80 }
+    get:
+      tags: [matchmaking]
+      operationId: getMatchmakingTicket
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kuyruk durumu
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MatchmakingTicket' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+    delete:
+      tags: [matchmaking]
+      operationId: cancelMatchmaking
+      security:
+        - bearerAuth: []
+      responses:
+        '204': { description: Sıra bileti iptal edildi }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/matches/{matchId}:
+    parameters:
+      - $ref: '#/components/parameters/MatchId'
+    get:
+      tags: [matches]
+      operationId: getMatch
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Yetkili oyuncu için güncel maç görünümü
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Match' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/matches/{matchId}/stream-ticket:
+    parameters:
+      - $ref: '#/components/parameters/MatchId'
+    post:
+      tags: [matches]
+      operationId: createMatchStreamTicket
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Kısa ömürlü, tek kullanımlık ve bu maça bağlı WebSocket bileti
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ticket, expiresAt]
+                properties:
+                  ticket: { type: string, minLength: 32, maxLength: 512 }
+                  expiresAt: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/matches/{matchId}/moves:
+    parameters:
+      - $ref: '#/components/parameters/MatchId'
+    post:
+      tags: [matches]
+      operationId: submitMove
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, minLength: 16, maxLength: 128 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [expectedPly, uci]
+              properties:
+                expectedPly: { type: integer, minimum: 0 }
+                uci: { type: string, pattern: '^[a-h][1-8][a-h][1-8][qrbn]?$' }
+      responses:
+        '200':
+          description: Sunucu hamleyi doğrulayıp sırayı ilerletti
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Match' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: Hamle sırası eski veya artık oyuncunun sırası değil }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+  /v1/leaderboards:
+    get:
+      tags: [leaderboards]
+      operationId: getLeaderboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scope
+          in: query
+          required: true
+          schema: { type: string, enum: [country, city, school, class] }
+        - name: scopeId
+          in: query
+          required: true
+          schema: { type: string, minLength: 1, maxLength: 100 }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+      responses:
+        '200':
+          description: İzin verilen kapsamda güncel oyuncu sıralaması
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [scope, scopeId, players, updatedAt]
+                properties:
+                  scope: { type: string, enum: [country, city, school, class] }
+                  scopeId: { type: string }
+                  players:
+                    type: array
+                    items: { $ref: '#/components/schemas/LeaderboardEntry' }
+                  updatedAt: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        default: { $ref: '#/components/responses/UnexpectedError' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ChallengeId:
+      name: challengeId
+      in: path
+      required: true
+      schema: { type: string, minLength: 32, maxLength: 64, pattern: '^[a-f0-9]+$' }
+    MatchId:
+      name: matchId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 80 }
+  schemas:
+    Player:
+      type: object
+      required: [id, displayName]
+      properties:
+        id: { type: string, minLength: 1, maxLength: 80 }
+        displayName: { type: string, minLength: 1, maxLength: 40 }
+        avatarUrl: { type: [string, 'null'], format: uri }
+        rating: { type: [integer, 'null'], minimum: 0 }
+    ChallengeInviter:
+      type: object
+      required: [displayName]
+      properties:
+        displayName: { type: string, minLength: 1, maxLength: 40 }
+    TimeControl:
+      type: object
+      required: [initialSeconds, incrementSeconds]
+      properties:
+        initialSeconds: { type: integer, minimum: 60, maximum: 86400, multipleOf: 60 }
+        incrementSeconds: { type: integer, minimum: 0, maximum: 180 }
+    CreateChallengeRequest:
+      type: object
+      required: [timeControl]
+      properties:
+        timeControl: { $ref: '#/components/schemas/TimeControl' }
+        colorPreference:
+          type: string
+          enum: [white, black, random]
+          default: random
+    Challenge:
+      type: object
+      required: [id, inviter, timeControl, status, expiresAt, shareUrl]
+      properties:
+        id: { type: string, minLength: 32, maxLength: 64 }
+        inviter: { $ref: '#/components/schemas/ChallengeInviter' }
+        timeControl: { $ref: '#/components/schemas/TimeControl' }
+        status: { type: string, enum: [pending, accepted, expired, cancelled] }
+        expiresAt: { type: string, format: date-time }
+        shareUrl: { type: string, format: uri, pattern: '^https://' }
+    AcceptedChallenge:
+      type: object
+      required: [challengeId, matchId, color, match]
+      properties:
+        challengeId: { type: string }
+        matchId: { type: string }
+        color: { type: string, enum: [white, black] }
+        match: { $ref: '#/components/schemas/Match' }
+    MatchmakingTicket:
+      type: object
+      required: [id, status, createdAt]
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [searching, matched, cancelled, expired] }
+        matchId: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+    Match:
+      type: object
+      required: [id, status, fen, ply, turn, players, clocks, updatedAt]
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [active, completed, abandoned] }
+        fen: { type: string, minLength: 1, maxLength: 100 }
+        ply: { type: integer, minimum: 0 }
+        turn: { type: string, enum: [white, black] }
+        lastMoveUci: { type: [string, 'null'] }
+        sanHistory:
+          type: array
+          items: { type: string, maxLength: 12 }
+        players:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: object
+            required: [player, color]
+            properties:
+              player: { $ref: '#/components/schemas/Player' }
+              color: { type: string, enum: [white, black] }
+        clocks:
+          type: object
+          required: [whiteMilliseconds, blackMilliseconds, serverTime]
+          properties:
+            whiteMilliseconds: { type: integer, minimum: 0 }
+            blackMilliseconds: { type: integer, minimum: 0 }
+            serverTime: { type: string, format: date-time }
+        result: { type: [string, 'null'], enum: [white, black, draw, null] }
+        updatedAt: { type: string, format: date-time }
+    LeaderboardEntry:
+      type: object
+      required: [rank, player, rating, gamesPlayed]
+      properties:
+        rank: { type: integer, minimum: 1 }
+        player: { $ref: '#/components/schemas/Player' }
+        rating: { type: integer, minimum: 0 }
+        gamesPlayed: { type: integer, minimum: 0 }
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, maxLength: 80 }
+            message: { type: string, maxLength: 300 }
+            requestId: { type: [string, 'null'], maxLength: 100 }
+  responses:
+    Unauthorized:
+      description: Erişim belirteci yok veya geçersiz
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    Forbidden:
+      description: Oyuncunun bu kaynağa erişim izni yok
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    NotFound:
+      description: Kayıt bulunamadı
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    ValidationError:
+      description: İstek alanları geçersiz
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    UnexpectedError:
+      description: Beklenmeyen sunucu hatası
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }

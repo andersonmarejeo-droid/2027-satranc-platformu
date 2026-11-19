@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "sha256_cert_fingerprints": [
+        "66:A7:D4:DB:60:BB:CC:D8:56:4F:DB:62:D0:38:38:47:43:E8:77:03:09:5D:41:4A:2E:8C:E6:33:1B:3D:F3:13",
+        "CF:73:38:E6:5A:79:AC:4A:E7:66:7D:0B:EC:85:0E:A8:35:63:96:27:BC:9E:F5:55:D5:A2:9A:EF:54:E9:96:6A"
+      ],
+      "package_name": "com.zpgames.satrancplatformu"
+    }
+  }
+]

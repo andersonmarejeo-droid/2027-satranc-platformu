@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-10-16",
+  "application": {
+    "name": "Satranç Platformu",
+    "developer": "ZP GAMES",
+    "package": "com.zpgames.satrancplatformu",
+    "versionName": "0.8.7",
+    "versionCode": 20
+  },
+  "firebase": {
+    "projectId": "satranc-platformu",
+    "plan": "Spark",
+    "region": "europe-west3",
+    "firestoreRulesFile": "firebase/firestore.rules",
+    "notificationTokensOwnerPrivate": true,
+    "appCheckClientReady": true,
+    "appCheckEnforced": false,
+    "crashlyticsClientReady": true,
+    "performanceClientReady": true,
+    "functionsServerAuthority": "contract-ready-not-deployed",
+    "billingEnabledByThisWork": false,
+    "rulesDeployment": "successful-2026-10-16-with-safety"
+  },
+  "verification": {
+    "dartAnalyzeLib": "passed",
+    "flutterTests": 165,
+    "gradleBundleRelease": "passed",
+    "apkSignature": "passed-v2",
+    "aabUploadCertificate": "CN=Satranc Platformu Upload",
+    "emulatorStarted": false,
+    "phoneInstallPerformed": true,
+    "phoneSerial": "5c76ad26",
+    "phoneVersion": "0.8.7 (20)",
+    "gradleAssembleRelease": "passed"
+  },
+  "artifacts": {
+    "aab": {
+      "path": "releases/satranc-platformu-play-0.8.7+20.aab",
+      "sha256": "54C322385F6FF7C16DD69FE736CCB43843ADE772B817221886AC2920072EF244"
+    },
+    "apk": {
+      "path": "releases/satranc-platformu-0.8.7+20.apk",
+      "sha256": "CE4FC74926B61C7333D5BFB4C1621FFD1990D2DD5E3E6727D72F8EFE82E21E9E"
+    }
+  },
+  "playConsole": {
+    "closedTest": "existing-alpha-track-not-mutated",
+    "aabUploadedByThisWork": false,
+    "productionSubmittedByThisWork": false,
+    "remainingEvidence": [
+      "12 real closed-test participants continuously opted in for 14 days",
+      "pre-launch report from the uploaded release",
+      "App Check valid-token traffic observation before enforcement",
+      "two physical device online match and App Link test"
+    ]
+  }
+}

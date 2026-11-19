@@ -1,0 +1,376 @@
+{
+  "recordedAt": "2026-10-05T13:37:51.859Z",
+  "application": {
+    "name": "Satranç Platformu",
+    "developer": "ZP GAMES",
+    "projectDirectory": "C:\\Users\\GiresuN\\StudioProjects\\ChessPlatform",
+    "androidPackage": "com.zpgames.satrancplatformu",
+    "versionName": "0.8.3",
+    "versionCode": 16,
+    "minimumAndroidApi": 24,
+    "targetAndroidApi": 36
+  },
+  "firebase": {
+    "projectId": "satranc-platformu",
+    "projectNumber": "684650621962",
+    "androidAppId": "1:684650621962:android:3f60f4c755b0722d5a43f3",
+    "plan": "Spark",
+    "billingEnabledByThisWork": false,
+    "firestoreRegion": "europe-west3",
+    "anonymousAuthenticationEnabled": true,
+    "rulesDeployment": "successful",
+    "rulesFile": "firebase/firestore.rules",
+    "rulesSha256": "7D2C7E0E4A0DE5A53521F06771604C52302F0DA1AF4C13D9E38A28A863A1F06C",
+    "hostingDeployment": "successful",
+    "website": "https://satranc-platformu.web.app",
+    "privacy": "https://satranc-platformu.web.app/privacy",
+    "dataDeletion": "https://satranc-platformu.web.app/privacy#delete-data",
+    "challengeUrlPattern": "https://satranc-platformu.web.app/challenge/<40-hex-id>",
+    "androidAssociationDocument": "https://satranc-platformu.web.app/.well-known/assetlinks.json",
+    "appCheckEnforced": false,
+    "analyticsEnabled": false,
+    "crashlyticsEnabled": false,
+    "emailPasswordAuthenticationEnabled": true,
+    "indexesFile": "firebase/firestore.indexes.json",
+    "indexesSha256": "ED807C313F2499DB15DC8F3C5F8DB7E14445DEFAD4E0CD2A445B2882DCF92EA9",
+    "indexesDeployment": "successful",
+    "privacyUpdatedForVersion": "0.8.2",
+    "lastVerifiedAt": "2026-10-05T09:35:43.295Z",
+    "authenticationSettingsLastReadAt": "2026-10-05T12:33:02.748Z",
+    "emailEnumerationProtectionEnabled": true,
+    "enforcedMinimumPasswordLength": 12,
+    "authConfigurationChangedIn083": false,
+    "rulesRedeployedIn083": false
+  },
+  "verification": {
+    "analysis": "passed",
+    "fullFlutterTestsPassed": 164,
+    "registrationTargetedTestsPassed": 13,
+    "liveFirebaseChecksPassed": 10,
+    "liveFirebaseChecksFromVersion": "0.8.3+16",
+    "registration": {
+      "recordedAt": "2026-10-05T12:33:02.748Z",
+      "version": "0.8.3+16",
+      "authSettings": {
+        "emailEnabled": true,
+        "anonymousEnabled": true,
+        "improvedEmailPrivacy": true,
+        "passwordPolicyMode": "ENFORCE",
+        "passwordStrength": {
+          "minPasswordLength": 12,
+          "maxPasswordLength": 4096,
+          "containsLowercaseCharacter": false,
+          "containsUppercaseCharacter": false,
+          "containsNumericCharacter": false,
+          "containsNonAlphanumericCharacter": false
+        },
+        "emailRecaptchaEnforcement": "default",
+        "verifyEmailTemplateConfigured": true,
+        "originalRefreshedProvider": "anonymous"
+      },
+      "legacyStatus": {
+        "status": 400,
+        "code": "OPERATION_NOT_ALLOWED"
+      },
+      "passed": 10,
+      "checks": [
+        "supported email registration endpoint accepts ID-token link",
+        "registration preserves guest UID",
+        "reload exposes permanent account to Flutter-equivalent SDK",
+        "registered address is reflected in account",
+        "password session retains original UID",
+        "password session authorizes permanent-account operations",
+        "fresh permanent ID token can back up private profile",
+        "ranking remains private and opt-in",
+        "email-password sign-in returns the original account",
+        "registration does not bypass email verification"
+      ],
+      "deliveryToRealMailboxTested": false,
+      "emailsSentToPeople": 0,
+      "fixtureDataAndAccountCleaned": true,
+      "cleanupErrors": [],
+      "failure": null
+    },
+    "verificationEmailDeliveryToRealMailboxTested": false,
+    "successfulFixtureDataAndAccountsCleaned": true,
+    "previousLiveTimingChecks": {
+      "version": "0.8.2+15",
+      "passed": 30,
+      "rerunFor083": false
+    },
+    "previousCapacityAndCompetitionChecks": {
+      "version": "0.8.1+14",
+      "capacity": 30,
+      "competition": 47,
+      "rerunFor083": false
+    },
+    "apkSignatureVerified": true,
+    "aabSignatureVerified": true,
+    "androidPackageAndVersionVerified": true,
+    "embeddedSchoolCatalogMatchesSource": true,
+    "embeddedPrivateSchoolCatalogMatchesSource": true,
+    "embeddedSchoolLicensePresent": true,
+    "emulatorStarted": false,
+    "thisVersionInstalledOnPhysicalPhone": false,
+    "currentPhysicalPhoneVerification": {
+      "checkedAt": "2026-10-05T13:37:51.5174081Z",
+      "physicalPhoneConnected": false,
+      "connectedPhysicalDevices": 0,
+      "thisVersionInstalled": false,
+      "installationVerified": false,
+      "installedVersion": null,
+      "lastVerifiedVersion": "0.8.1+14",
+      "emulatorStarted": false,
+      "applicationDataCleared": false,
+      "reason": "No USB Android device connected at final check"
+    },
+    "previousPhysicalPhoneVerification": {
+      "version": "0.8.1+14",
+      "installed": true,
+      "launchRequestSuccessful": true
+    },
+    "twoPhysicalPhonesWhatsAppAppLinkTest": "pending",
+    "detailedPhysicalUiAndPerformanceVerified": false
+  },
+  "artifacts": {
+    "apk": {
+      "path": "releases/satranc-platformu-0.8.3+16.apk",
+      "bytes": 68206453,
+      "sha256": "43D34B3F65B47004CF1A32B64B0CE1029EF8E2AFD28E170FF450EC997CBDE1B1"
+    },
+    "aab": {
+      "path": "releases/satranc-platformu-play-0.8.3+16.aab",
+      "bytes": 67708008,
+      "sha256": "AA87C7594292288411DB4615B52C3DDB44BA935D20BC06C7E381B4B7EF8A04CA"
+    }
+  },
+  "playConsole": {
+    "developerId": "6350089341647884242",
+    "appId": "4973778407235444120",
+    "storeListing": "saved_pending_review",
+    "dataSafety": "saved_pending_review",
+    "advertisingIdDeclaration": "does_not_use_advertising_id_saved",
+    "publishingOverview": {
+      "closedReleaseSaved": true,
+      "dataSafetySaved": true,
+      "storeListingSaved": true,
+      "submittedForReview": false
+    },
+    "category": "Board",
+    "tag": "Chess",
+    "language": "tr-TR",
+    "paid": false,
+    "ads": false,
+    "internalTest": {
+      "trackId": "4700086157986741018",
+      "releaseId": 2,
+      "versionCode": 14,
+      "versionName": "0.8.1",
+      "releaseName": "0.8.1 (14) · 20 üyelik takım testi",
+      "state": "available_to_internal_testers",
+      "rolloutStarted": true,
+      "publishedAt": "2026-10-05T10:07:00+03:00",
+      "eligibleListMembers": 1,
+      "optInUrl": "https://play.google.com/apps/internaltest/4700086157986741018"
+    },
+    "closedTest": {
+      "trackId": "4699343063943739705",
+      "name": "Alpha",
+      "releaseId": 2,
+      "versionCode": 14,
+      "versionName": "0.8.1",
+      "state": "saved_pending_review_account_approval",
+      "description": "Yeni 0.8.1+14 Alpha sürümü kaydedildi; Google incelemesine gönderilmeden önce ayrı inceleme hesabının bilgilerinin aktarılması için kullanıcı onayı bekliyor.",
+      "reviewSubmitted": false,
+      "rolloutStarted": false,
+      "countries": [
+        "TR"
+      ],
+      "eligibleListMembers": 16,
+      "observedOptedInTesters": 0,
+      "fourteenConsecutiveDaysCompleted": false,
+      "previousRelease": {
+        "versionCode": 10,
+        "state": "available_to_closed_testers"
+      },
+      "optInUrl": "https://play.google.com/apps/testing/com.zpgames.satrancplatformu"
+    },
+    "production": {
+      "released": false,
+      "accessRequirement": "At least 12 real closed-test participants opted in continuously for 14 days, then production access application."
+    },
+    "lastVerifiedAt": "2026-10-04T18:28:45+03:00",
+    "recheckedDuring080Work": false,
+    "recordedAt": "2026-10-05",
+    "source": "Authenticated Google Play Console UI",
+    "appAccess": {
+      "state": "test_account_credential_disclosure_approval_pending",
+      "restrictedFeatures": [
+        "optional account backup",
+        "verified community ranking"
+      ],
+      "privateReviewAccountScript": "tool/prepare_play_review_account.mjs",
+      "reviewCredentialsSubmitted": false
+    },
+    "preLaunchReport": {
+      "state": "no_report_visible",
+      "language": "tr-TR",
+      "languageSettingSaved": true,
+      "description": "Play lansman öncesi raporu henüz oluşmadı; Türkçe test dili kaydedildi. Console, yapı yüklenince raporun otomatik oluşturulduğunu bildiriyor. Çalışan test veya başarı sonucu henüz doğrulanmadı."
+    },
+    "aiAssetDeclaration": {
+      "icon": true,
+      "featureGraphic": true,
+      "actualAppScreenshots": false
+    },
+    "proofScreenshot": "C:/Users/GiresuN/Documents/Codex/2026-10-02/referenced-chatgpt-conversation-this-is-an/play-081-alpha-hazir.jpg",
+    "nextUserRequestedWork": {
+      "order": "after closed-test submission",
+      "tasks": [
+        "Replace Hesabımı koru with Kayıt ol",
+        "Diagnose and fix missing email verification delivery"
+      ],
+      "state": "deferred_by_user_until_previous_task_finished"
+    },
+    "approvalReview": {
+      "rejectedAction": "Classify fixed app-generated end-game message codes as other in-app user messages",
+      "statedReason": "Only fixed app-generated codes were verified; collected user messages were not verified.",
+      "safeAlternative": "Declare gameplay and fixed dialogue choices within existing Other actions; no free-form chat category added."
+    },
+    "recheckedDuring081Work": true,
+    "localVersionNotUploaded": {
+      "versionCode": 16,
+      "versionName": "0.8.3",
+      "aabPath": "releases/satranc-platformu-play-0.8.3+16.aab"
+    }
+  },
+  "currentLimits": [
+    "Online access and accounts require neutral 13+ age selection and consent; offline play remains available from age 6.",
+    "Community points require verified e-mail, explicit opt-in, at least four plies and matching confirmations from both clients. Guests remain unranked.",
+    "Full chess legality is replayed by clients. Community points are not authoritative Elo; colluding modified clients are not prevented by a server engine.",
+    "School/class/group membership is self-declared. Weekly cup is a score-period ranking, not automatic bracket tournament pairing.",
+    "Profile/school selection is privately backed up; local game history is not synchronized across devices.",
+    "No iOS Firebase/Universal Links configuration or iOS build has been verified.",
+    "Spark daily read/write quotas apply; no paid plan was enabled. Presence writes occur every 20 seconds while the match screen is active.",
+    "Catalogue sources and dates are retained; MEB reuse permission and absolute current completeness remain unverified; user deferred permission review.",
+    "0.8.1 was published to internal test; closed-test and pre-launch status are recorded from Play UI below. Real participants and the 14-day requirement cannot be simulated by Firebase fixtures.",
+    "Inactivity match outcome uses the existing client refresh; server rejects late moves. Community points retain both-player agreement and at least four plies; an absent opponent can delay point confirmation.",
+    "0.8.3+16 signed APK/AAB prepared locally; not uploaded to Play. The previously recorded internal 0.8.1+14 and closed draft remain unchanged. Dedicated review credential disclosure approval remains pending.",
+    "Registration and private backup passed ordinary live-client checks. No email was sent to a real person; actual verification-mail delivery to a mailbox is unverified."
+  ],
+  "desktopExports": {
+    "checksumsVerified": true,
+    "apkPath": "C:/Users/GiresuN/Desktop/Satranc-Platformu-0.8.3.apk",
+    "aabPath": "C:/Users/GiresuN/Desktop/Satranc-Platformu-0.8.3.aab"
+  },
+  "featuresAddedIn071": [
+    "fresh-default-palette",
+    "black-white-board-and-pieces",
+    "default-off-move-hints",
+    "online-hints-always-hidden",
+    "draw-offer-and-agreement",
+    "same-opponent-private-rematch",
+    "fixed-end-messages-with-12-message-cap"
+  ],
+  "schoolCatalog": {
+    "provinces": 81,
+    "institutions": 67736,
+    "publicSourceInstitutions": 55117,
+    "privateSchools": 12619,
+    "giresunInstitutions": 393,
+    "privateSource": "https://ookgm.meb.gov.tr/kurumlar.php",
+    "privateSourceFetchedAt": "2026-10-04T19:38:16.528Z",
+    "sourceDate": "2026-08-31",
+    "sourceRecordCount": 55216,
+    "excludedNonProvinceRecords": 99,
+    "source": "https://github.com/dalgali/MEB-okul-listesi",
+    "sourceCommit": "0f2b3e6af008f283c1f9b43bdcbd1556eab8da1f",
+    "offline": true,
+    "classroomMembership": "self-declared, school-scoped, not officially verified",
+    "upstreamReusePermission": "not established; review deferred by user"
+  },
+  "featuresAddedIn072": [
+    "81-province-offline-school-catalog",
+    "55117-public-source-institutions",
+    "official-private-school-catalog-all-81-provinces",
+    "searchable-city-school-picker",
+    "school-scoped-declared-grade-section",
+    "compact-registration",
+    "bounded-searchable-leaderboard-list"
+  ],
+  "featuresAddedIn080": [
+    "compact-my-school-and-single-picker-edit",
+    "private-missing-school-feedback",
+    "remembered-one-tap-play-and-safe-resume",
+    "auto-open-fast-match-and-queue-timeout",
+    "connection-presence-and-retry",
+    "optional-linked-email-account-verification-and-recovery",
+    "private-profile-and-membership-backup-restore",
+    "separate-public-ranking-opt-in-and-retriable-opt-out-cleanup",
+    "two-client-result-agreement",
+    "immutable-idempotent-3-1-0-community-points",
+    "weekly-monthly-all-time-community-standings-and-exact-own-rank",
+    "post-game-basic-review",
+    "reduce-motion-and-light-board"
+  ],
+  "smallTeamPolicy": {
+    "maximumMembers": 20,
+    "scopes": [
+      "classroom",
+      "group"
+    ],
+    "appliesTo": "permanent linked accounts",
+    "guestsReserveRemotePlaces": false,
+    "parentsCapped": false,
+    "backendEnforced": true,
+    "maximumTransactionChanges": 6,
+    "membershipPrivate": true
+  },
+  "featuresAddedIn081": [
+    "atomic-class-and-group-20-member-cap",
+    "concurrent-final-place-reservation",
+    "friendly-full-team-error",
+    "departure-frees-capacity",
+    "private-membership-documents",
+    "uncapped-country-city-school",
+    "account-deletion-releases-places"
+  ],
+  "onlineTimingPolicy": {
+    "defaultMinutesPerPlayer": 10,
+    "primaryMinutes": [
+      10,
+      15,
+      30,
+      60
+    ],
+    "turnLimitSeconds": 180,
+    "newOnlineMatchesOnly": true,
+    "legacyMatchesPreserved": true,
+    "backendEnforced": true,
+    "earlierTotalClockWins": true,
+    "rankingQuorumChanged": false
+  },
+  "featuresAddedIn082": [
+    "longer-primary-time-controls",
+    "ten-minute-default-and-preference-migration",
+    "server-enforced-three-minute-online-turn-limit",
+    "turn-countdown-and-inactivity-outcome",
+    "rule-aware-matchmaking-and-whatsapp-description",
+    "late-expired-move-refresh"
+  ],
+  "featuresAddedIn083": [
+    "clear-register-label",
+    "id-token-signup-preserving-guest-uid",
+    "password-session-for-private-backup",
+    "twelve-character-policy-alignment",
+    "verification-independent-of-backup",
+    "localized-verification-request-and-retry",
+    "specific-auth-errors"
+  ],
+  "newIconProposal": {
+    "path": "design/icon-options/04-studio-chess-512.png",
+    "prompt": "design/icon-options/04-STUDIO-PROMPT.md",
+    "appliedToLauncher": false,
+    "appliedToPlayListing": false
+  }
+}

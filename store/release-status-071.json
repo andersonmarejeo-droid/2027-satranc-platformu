@@ -1,0 +1,145 @@
+{
+  "recordedAt": "2026-10-04T20:46:40.1980311+03:00",
+  "application": {
+    "name": "Satranç Platformu",
+    "developer": "ZP GAMES",
+    "projectDirectory": "C:\\Users\\GiresuN\\StudioProjects\\ChessPlatform",
+    "androidPackage": "com.zpgames.satrancplatformu",
+    "versionName": "0.7.1",
+    "versionCode": 11,
+    "minimumAndroidApi": 24,
+    "targetAndroidApi": 36
+  },
+  "firebase": {
+    "projectId": "satranc-platformu",
+    "projectNumber": "684650621962",
+    "androidAppId": "1:684650621962:android:3f60f4c755b0722d5a43f3",
+    "plan": "Spark",
+    "billingEnabledByThisWork": false,
+    "firestoreRegion": "europe-west3",
+    "anonymousAuthenticationEnabled": true,
+    "rulesDeployment": "successful",
+    "rulesFile": "firebase/firestore.rules",
+    "rulesSha256": "95893E3322D34B902AE16E34D34B864705A07D4778E662340FDF23250CE198A7",
+    "hostingDeployment": "successful",
+    "website": "https://satranc-platformu.web.app",
+    "privacy": "https://satranc-platformu.web.app/privacy",
+    "dataDeletion": "https://satranc-platformu.web.app/privacy#delete-data",
+    "challengeUrlPattern": "https://satranc-platformu.web.app/challenge/<40-hex-id>",
+    "androidAssociationDocument": "https://satranc-platformu.web.app/.well-known/assetlinks.json",
+    "appCheckEnforced": false,
+    "analyticsEnabled": false,
+    "crashlyticsEnabled": false
+  },
+  "verification": {
+    "analysis": "passed",
+    "fullFlutterTestsPassed": 121,
+    "focusedTestsAfterFinalSourceChangesPassed": 4,
+    "liveFirebaseChecksPassed": 38,
+    "ordinaryAnonymousClients": 3,
+    "firebaseLog": "releases/online-071-firebase-verification.log",
+    "androidAssociationHttpStatus": 200,
+    "challengePageHttpStatus": 200,
+    "apkSignatureVerified": true,
+    "aabSignatureVerified": true,
+    "emulatorStarted": false,
+    "physicalPhoneConnectedAtLastCheck": false,
+    "thisVersionInstalledOnPhysicalPhone": false,
+    "twoPhysicalPhonesWhatsAppAppLinkTest": "pending",
+    "mobileVisualPreviewsVerified": 7
+  },
+  "artifacts": {
+    "apk": {
+      "sha256": "A92D34C55398BDA556935697A98ACBA1FF330A229CC8AC0B5F269FA9B6542DE5",
+      "path": "releases/satranc-platformu-0.7.1+11.apk",
+      "bytes": 65281564
+    },
+    "aab": {
+      "sha256": "FFF19E080043634123D6EB9336FD63157143469EE94C0792017E7941CE3B1BBE",
+      "path": "releases/satranc-platformu-play-0.7.1+11.aab",
+      "bytes": 64986251
+    }
+  },
+  "playConsole": {
+    "developerId": "6350089341647884242",
+    "appId": "4973778407235444120",
+    "storeListing": "under_google_review",
+    "dataSafety": "under_google_review",
+    "advertisingIdDeclaration": "does_not_use_advertising_id_saved",
+    "publishingOverview": {
+      "unsentChanges": 0,
+      "submitForReviewButtonEnabled": false,
+      "automatedChecks": "completed_ready_then_submitted",
+      "detectedBlockingIssuesAfterDeclarationFix": 0,
+      "underReviewChanges": 15
+    },
+    "category": "Board",
+    "tag": "Chess",
+    "language": "tr-TR",
+    "paid": false,
+    "ads": false,
+    "internalTest": {
+      "trackId": "4700086157986741018",
+      "releaseId": 1,
+      "versionCode": 10,
+      "state": "available_to_internal_testers",
+      "testerList": "Satranç Platformu · Geliştirici",
+      "eligibleListMembers": 1,
+      "rolloutStarted": true,
+      "optInUrl": "https://play.google.com/apps/internaltest/4700086157986741018"
+    },
+    "closedTest": {
+      "trackId": "4699343063943739705",
+      "name": "Alpha",
+      "releaseId": 1,
+      "versionCode": 10,
+      "state": "under_google_review",
+      "countries": [
+        "TR"
+      ],
+      "testerList": "12",
+      "eligibleListMembers": 16,
+      "reviewSubmitted": true,
+      "rolloutStarted": false,
+      "realParticipationVerified": false,
+      "fourteenConsecutiveDaysCompleted": false,
+      "rolloutScheduledAfterApproval": true
+    },
+    "production": {
+      "released": false,
+      "accessRequirement": "At least 12 real closed-test participants opted in continuously for 14 days, then production access application."
+    },
+    "localVersionNotUploaded": {
+      "versionName": "0.7.1",
+      "versionCode": 11,
+      "currentClosedReviewVersionCode": 10,
+      "currentInternalVersionCode": 10,
+      "preparedListingFile": "store/listing-tr.md"
+    },
+    "lastVerifiedAt": "2026-10-04T18:28:45+03:00"
+  },
+  "currentLimits": [
+    "Online access requires neutral 13+ age selection and data consent; offline play remains available from age 6.",
+    "Online games are unranked; full chess legality is replayed by clients, not an authoritative server engine.",
+    "School, class and group leaderboards still contain demonstration data.",
+    "WhatsApp opens a message composer; the user chooses the recipient and sends the message.",
+    "Physical Android App Link opening and a complete two-phone invitation game still need device verification.",
+    "No iOS Firebase or Universal Links configuration has been verified.",
+    "Matchmaking queue expiry needs a clearer automatic UI transition in a later sprint.",
+    "Spark quotas apply; no paid plan was enabled."
+  ],
+  "desktopExports": {
+    "checksumsVerified": true,
+    "aabPath": "C:\\Users\\GiresuN\\Desktop\\Satranc-Platformu-0.7.1.aab",
+    "apkPath": "C:\\Users\\GiresuN\\Desktop\\Satranc-Platformu-0.7.1.apk"
+  },
+  "featuresAddedIn071": [
+    "fresh-default-palette",
+    "black-white-board-and-pieces",
+    "default-off-move-hints",
+    "online-hints-always-hidden",
+    "draw-offer-and-agreement",
+    "same-opponent-private-rematch",
+    "fixed-end-messages-with-12-message-cap"
+  ]
+}

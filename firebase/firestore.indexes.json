@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    {"collectionGroup":"communityScores","queryScope":"COLLECTION","fields":[
+      {"fieldPath":"published","order":"ASCENDING"},
+      {"fieldPath":"scope","order":"ASCENDING"},
+      {"fieldPath":"communityId","order":"ASCENDING"},
+      {"fieldPath":"period","order":"ASCENDING"},
+      {"fieldPath":"points","order":"ASCENDING"}
+    ]},
+    {"collectionGroup":"communityScores","queryScope":"COLLECTION","fields":[
+      {"fieldPath":"published","order":"ASCENDING"},
+      {"fieldPath":"scope","order":"ASCENDING"},
+      {"fieldPath":"communityId","order":"ASCENDING"},
+      {"fieldPath":"period","order":"ASCENDING"},
+      {"fieldPath":"points","order":"DESCENDING"},
+      {"fieldPath":"uid","order":"ASCENDING"}
+    ]},
+    {"collectionGroup":"communityScores","queryScope":"COLLECTION","fields":[
+      {"fieldPath":"published","order":"ASCENDING"},
+      {"fieldPath":"scope","order":"ASCENDING"},
+      {"fieldPath":"communityId","order":"ASCENDING"},
+      {"fieldPath":"period","order":"ASCENDING"},
+      {"fieldPath":"points","order":"ASCENDING"},
+      {"fieldPath":"uid","order":"ASCENDING"}
+    ]}
+  ],
+  "fieldOverrides": []
+}

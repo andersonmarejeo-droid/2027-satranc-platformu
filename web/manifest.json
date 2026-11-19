@@ -1,0 +1,19 @@
+{
+  "name": "Satranç Platformu",
+  "short_name": "Satranç",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#244C3E",
+  "description": "Sakin bir tahta. Güzel bir oyun.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

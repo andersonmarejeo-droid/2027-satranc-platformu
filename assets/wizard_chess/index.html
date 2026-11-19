@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wizard Chess 3D</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0e0705;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+    /* Ultra kompakt ve şık, tahtayı örtmeyen yarı saydam kamera çubuğu */
+    #hud-top {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.75);
+      transform-origin: top center;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 7px;
+      background: rgba(18, 9, 6, 0.90);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 160, 0, 0.50);
+      border-radius: 999px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75);
+      z-index: 20;
+      width: max-content;
+      max-width: 128%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    #hud-top::-webkit-scrollbar {
+      display: none;
+    }
+    .cam-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 196, 0, 0.22);
+      background: rgba(30, 35, 56, 0.85);
+      color: #f7ecd0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .cam-btn.active {
+      background: linear-gradient(135deg, #ffd740 0%, #ffab00 55%, #e68a00 100%);
+      color: #161004;
+      border-color: #ffe57f;
+      box-shadow: 0 0 10px rgba(255, 196, 0, 0.55);
+    }
+    .theme-btn {
+      background: rgba(45, 30, 65, 0.90) !important;
+      border-color: rgba(220, 160, 255, 0.40) !important;
+      color: #f5e6ff !important;
+    }
+    #theme-toast {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(14, 18, 28, 0.92);
+      border: 1px solid rgba(255, 215, 64, 0.5);
+      border-radius: 999px;
+      padding: 4px 14px;
+      color: #ffe57f;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 30;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <div id="hud-top">
+      <button class="cam-btn active" data-cam="player">Oyuncu Açısı</button>
+      <button class="cam-btn" data-cam="overhead">Kuşbakışı</button>
+      <button class="cam-btn" data-cam="side">Yandan</button>
+      <button class="cam-btn" data-cam="cathedral">Katedral</button>
+      <button class="cam-btn theme-btn" id="btn-theme">🎨 Tema</button>
+    </div>
+    <div id="theme-toast">Tema: Gotik Obsidyen</div>
+  </div>
+
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const container = document.getElementById('canvas-container');
+
+      // =========================================================================
+      // 1. ARGON OPTİMİZASYONLU 60 FPS WEBGL RENDERER (PRO UNITY NETLİK & SIFIR KASMA)
+      // =========================================================================
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: 'high-performance',
+        alpha: false,
+        stencil: false,
+        precision: 'highp'
+      });
+      // 60 FPS Kesintisiz Akıcılık ve Netlik: 1.6 DPR mobil ekranda mükemmel netlik ve sıfır kasma
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+      renderer.setSize(container.clientWidth || 360, container.clientHeight || 540);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.92;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.shadowMap.autoUpdate = false;
+      container.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      // Ateş ve Köz Tonlarında Sinematik Gotik Atmosfer (Derin Volkanik Katedral)
+      scene.background = new THREE.Color(0x090504);
+      scene.fog = new THREE.FogExp2(0x090504, 0.022);
+
+      const worldGroup = new THREE.Group();
+      scene.add(worldGroup);
+
+      // Kamera: FOV 48° - Dikey ekranda tahtayı devasa büyüterek ekranı tam doldurur
+      const camera = new THREE.PerspectiveCamera(
+        48,
+        (container.clientWidth || 1) / (container.clientHeight || 1),
+        0.2,
+        140
+      );
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.enablePan = false;
+      controls.minDistance = 2.0;
+      controls.maxDistance = 45.0;
+      controls.minPolarAngle = 0.06;
+      controls.maxPolarAngle = Math.PI * 0.455;
+      controls.rotateSpeed = 0.8;
+      controls.zoomSpeed = 0.95;
+
+      // Talep Üzerine Render (On-Demand + Canlı Alev Fiziği)
+      let renderFramesRemaining = 30;
+      let shadowsDirty = true;
+
+      function requestRender(frames) {
+        renderFramesRemaining = Math.max(renderFramesRemaining, frames || 4);
+      }
+      function markShadowsDirty() {
+        shadowsDirty = true;
+        requestRender(6);
+      }
+
+      controls.addEventListener('change', () => requestRender(3));
+
+      // =========================================================================
+      // 2. DOYGUN ATEŞ VE STÜDYO IŞIKLANDIRMASI (YÜKSEK KONTRAST & 3B DERİNLİK)
+      // =========================================================================
+      // Not: PMREM çevre haritası taş gölgelerini beyazlattığı için kaldırıldı;
+      // doğrudan sinematik yönlü ışıklarla %100 3B heykel gölgelendirmesi sağlanır.
+      const hemiLight = new THREE.HemisphereLight(0xffe4c4, 0x120804, 0.44);
+      scene.add(hemiLight);
+
+      // Ana Işık: Taşların sağ-ön yüzünü aydınlatıp sol-arka yüzünde net 3B hacim gölgesi oluşturur
+      const mainLight = new THREE.DirectionalLight(0xfff4e2, 1.15);
+      mainLight.position.set(5.5, 13.5, 6.2);
+      mainLight.castShadow = true;
+      mainLight.shadow.mapSize.width = 1024;
+      mainLight.shadow.mapSize.height = 1024;
+      mainLight.shadow.camera.near = 4.0;
+      mainLight.shadow.camera.far = 26.0;
+      const shLim = 4.8;
+      mainLight.shadow.camera.left = -shLim;
+      mainLight.shadow.camera.right = shLim;
+      mainLight.shadow.camera.top = shLim;
+      mainLight.shadow.camera.bottom = -shLim;
+      mainLight.shadow.bias = -0.0012;
+      worldGroup.add(mainLight);
+
+      // Sıcak gölge dolgusu (Ateş tonlu gotik ambiyans)
+      const fillLight = new THREE.DirectionalLight(0x9e5828, 0.24);
+      fillLight.position.set(-5.0, 7.5, -5.0);
+      worldGroup.add(fillLight);
+
+      // İki noktadaki gerçekçi 🔥 alev meşale ışıkları
+      const fireLightLeft = new THREE.PointLight(0xff6600, 1.35, 9.5, 1.8);
+      fireLightLeft.position.set(-4.85, 0.90, 0.0);
+      worldGroup.add(fireLightLeft);
+
+      const fireLightRight = new THREE.PointLight(0xff6600, 1.35, 9.5, 1.8);
+      fireLightRight.position.set(4.85, 0.90, 0.0);
+      worldGroup.add(fireLightRight);
+
+      // Yalnızca taş kırılma anında aktifleşen alevli darbe flaş ışığı
+      const impactLight = new THREE.PointLight(0xff5500, 0, 10.0, 2.0);
+      worldGroup.add(impactLight);
+
+      // =========================================================================
+      // 4. HIZLI BUFFERGEOMETRY BİRLEŞTİRİCİ (DRAW CALL SAYISINI %85 AZALTIR)
+      // =========================================================================
+      function mergeBufferGeos(geometries) {
+        if (!geometries || geometries.length === 0) return null;
+        const nonIndexed = [];
+        let totalVerts = 0;
+
+        for (let i = 0; i < geometries.length; i++) {
+          const g = geometries[i].index ? geometries[i].toNonIndexed() : geometries[i];
+          const pos = g.attributes.position;
+          if (!pos) continue;
+          if (!g.attributes.normal) g.computeVertexNormals();
+          nonIndexed.push(g);
+          totalVerts += pos.count;
+        }
+        if (totalVerts === 0) return null;
+
+        const positions = new Float32Array(totalVerts * 3);
+        const normals = new Float32Array(totalVerts * 3);
+        const uvs = new Float32Array(totalVerts * 2);
+
+        let vOffset = 0;
+        for (let i = 0; i < nonIndexed.length; i++) {
+          const g = nonIndexed[i];
+          const pos = g.attributes.position.array;
+          const norm = g.attributes.normal.array;
+          const uvAttr = g.attributes.uv;
+          const count = g.attributes.position.count;
+
+          positions.set(pos, vOffset * 3);
+          normals.set(norm, vOffset * 3);
+          if (uvAttr) {
+            uvs.set(uvAttr.array, vOffset * 2);
+          }
+          vOffset += count;
+          g.dispose();
+        }
+
+        const merged = new THREE.BufferGeometry();
+        merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        merged.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+        merged.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+        return merged;
+      }
+
+      const _tmpMat4 = new THREE.Matrix4();
+      const _tmpPos = new THREE.Vector3();
+      const _tmpEuler = new THREE.Euler();
+      const _tmpQuat = new THREE.Quaternion();
+      const _tmpScale = new THREE.Vector3();
+
+      function xformGeo(geo, x, y, z, rx, ry, rz, sx, sy, sz) {
+        _tmpPos.set(x || 0, y || 0, z || 0);
+        _tmpEuler.set(rx || 0, ry || 0, rz || 0);
+        _tmpQuat.setFromEuler(_tmpEuler);
+        _tmpScale.set(sx || 1, sy || 1, sz || 1);
+        _tmpMat4.compose(_tmpPos, _tmpQuat, _tmpScale);
+        geo.applyMatrix4(_tmpMat4);
+        return geo;
+      }
+
+      // =========================================================================
+      // 5. CPU DATATEXTURE MERMER MOTORU (SIFIR CANVAS HATASI & %100 KONTRAST)
+      // =========================================================================
+      // Android WebView Skia 2D Canvas bellek taşmasını önlemek için doğrudan
+      // CPU Uint8Array RGBA DataTexture üretilir: Beyaz taşların zeminden %100
+      // ayrışması için açık kareler Sıcak Karamel-Kehribar Traverten (#be9862),
+      // koyu kareler ise Derin Gece Obsidyeni (#141018) olarak dokulandırılır.
+      function createMarbleTex(isLight) {
+        const size = 128;
+        const data = new Uint8Array(size * size * 4);
+
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const idx = (y * size + x) * 4;
+            const u = x / size;
+            const v = y / size;
+
+            // Organik mermer damar fonksiyonu
+            const wave1 = Math.sin((u * 6.0 + v * 4.5) + Math.sin(u * 12.0) * 0.45);
+            const wave2 = Math.cos((u * 9.5 - v * 7.0) + Math.cos(v * 10.0) * 0.35);
+            const vein = Math.pow(Math.abs(wave1 * 0.6 + wave2 * 0.4), 3.0);
+
+            // Kare kenarı 4px koyu bronz çerçeve (her kareyi jilet gibi ayırır)
+            const isBorder = (x < 4 || x >= size - 4 || y < 4 || y >= size - 4);
+
+            let r, g, b;
+            if (isLight) {
+              if (isBorder) {
+                r = 82; g = 50; b = 22;
+              } else {
+                // Sıcak Karamel-Kumtaşı Traverten (Beyaz taşlarla maksimum kontrast!)
+                const grad = (u + v) * 0.5;
+                r = Math.round(196 - grad * 22 - vein * 34);
+                g = Math.round(158 - grad * 20 - vein * 30);
+                b = Math.round(104 - grad * 18 - vein * 24);
+              }
+            } else {
+              if (isBorder) {
+                r = 64; g = 40; b = 20;
+              } else {
+                // Derin Gece Obsidyeni (Altın kuşaklı siyah ve beyaz taşlarla tam kontrast)
+                const grad = (u + v) * 0.5;
+                r = Math.round(22 - grad * 6 + vein * 18);
+                g = Math.round(17 - grad * 5 + vein * 13);
+                b = Math.round(24 - grad * 6 + vein * 10);
+              }
+            }
+
+            data[idx] = Math.max(0, Math.min(255, r));
+            data[idx + 1] = Math.max(0, Math.min(255, g));
+            data[idx + 2] = Math.max(0, Math.min(255, b));
+            data[idx + 3] = 255;
+          }
+        }
+
+        const tex = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+        tex.encoding = THREE.sRGBEncoding;
+        tex.magFilter = THREE.LinearFilter;
+        tex.minFilter = THREE.LinearMipMapLinearFilter;
+        tex.generateMipmaps = true;
+        tex.needsUpdate = true;
+        return tex;
+      }
+
+      // Canlı, yüksek kontrastlı ve ultra net Pro PBR materyalleri (Argon 4 Kontrast Motoru)
+      const MATERIALS = {
+        // AÇIK KARELER: Sıcak Karamel-Kehribar Traverten (Beyaz taşların parlaması için asla beyaz değil!)
+        lightSquare: new THREE.MeshStandardMaterial({
+          map: createMarbleTex(true),
+          color: 0xc8a26c,
+          roughness: 0.42,
+          metalness: 0.04
+        }),
+        // KOYU KARELER: Derin Gece Obsidyeni
+        darkSquare: new THREE.MeshStandardMaterial({
+          map: createMarbleTex(false),
+          color: 0x18131c,
+          roughness: 0.36,
+          metalness: 0.10
+        }),
+        runeGold: new THREE.MeshStandardMaterial({
+          color: 0xe6a117,
+          emissive: 0x2e1800,
+          metalness: 0.88,
+          roughness: 0.18
+        }),
+        // SİYAH TAŞLARIN KUŞAK & TAÇ ALTINI: Parlak Kraliyet Altını
+        royalGold: new THREE.MeshStandardMaterial({
+          color: 0xffcc33,
+          emissive: 0x381e00,
+          metalness: 0.88,
+          roughness: 0.14
+        }),
+        // BEYAZ TAŞLARIN KUŞAK & TAÇ BRONZU: Koyu İmparatorluk Bronzu (Beyaz gövdeyi zeminden ve halkalardan jilet gibi ayırır!)
+        whiteTrim: new THREE.MeshStandardMaterial({
+          color: 0x4a2408,
+          emissive: 0x0c0400,
+          metalness: 0.68,
+          roughness: 0.24
+        }),
+        ebonyFrame: new THREE.MeshStandardMaterial({
+          color: 0x0d090b,
+          metalness: 0.45,
+          roughness: 0.28
+        }),
+        // BEYAZ ORDU: Saf Parlak Alabaster Fildişi Heykel (Sıcak karamel ve siyah kareler üzerinde %100 net!)
+        whiteArmor: new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          emissive: 0x000000,
+          roughness: 0.30,
+          metalness: 0.03
+        }),
+        whiteGem: new THREE.MeshStandardMaterial({
+          color: 0x0088ff,
+          emissive: 0x0044aa,
+          roughness: 0.08,
+          metalness: 0.25
+        }),
+        // SİYAH ORDU: Derin Antrasit-Obsidyen Zırh
+        blackArmor: new THREE.MeshStandardMaterial({
+          color: 0x15111a,
+          emissive: 0x000000,
+          metalness: 0.52,
+          roughness: 0.24
+        }),
+        blackGem: new THREE.MeshStandardMaterial({
+          color: 0xff1744,
+          emissive: 0xc50018,
+          roughness: 0.08,
+          metalness: 0.25
+        }),
+        cathedralStone: new THREE.MeshStandardMaterial({
+          color: 0x110a08,
+          roughness: 0.88,
+          metalness: 0.05
+        }),
+        // Taş Tabanı Temas Gölgesi (Kuvvetli Ambient Occlusion Halesi)
+        contactShadow: new THREE.MeshBasicMaterial({
+          color: 0x000000,
+          transparent: true,
+          opacity: 0.58,
+          depthWrite: false
+        }),
+        // 🔥 ATEŞ MATERYALLERİ: Mavi Kök, Akkor Beyaz Kalp, Parlak Kehribar ve Alev Kızılı
+        flameBlueBase: new THREE.MeshBasicMaterial({
+          color: 0x00d4ff,
+          transparent: true,
+          opacity: 0.95,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        }),
+        flameWhiteCore: new THREE.MeshBasicMaterial({
+          color: 0xfffff0,
+          transparent: true,
+          opacity: 0.98,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        }),
+        flameAmberBody: new THREE.MeshBasicMaterial({
+          color: 0xff9100,
+          transparent: true,
+          opacity: 0.92,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        }),
+        flameRedWing: new THREE.MeshBasicMaterial({
+          color: 0xff2a00,
+          transparent: true,
+          opacity: 0.88,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        }),
+        torchFlame: new THREE.MeshBasicMaterial({
+          color: 0xff6d00,
+          transparent: true,
+          opacity: 0.92
+        }),
+        torchCore: new THREE.MeshBasicMaterial({
+          color: 0xffeb3b
+        }),
+        // Parçalanma efektleri için önbellekli hafif materyaller
+        shardWhite: new THREE.MeshStandardMaterial({
+          color: 0xf8f3e8,
+          roughness: 0.14,
+          metalness: 0.08
+        }),
+        shardBlack: new THREE.MeshStandardMaterial({
+          color: 0x121014,
+          roughness: 0.14,
+          metalness: 0.88
+        }),
+        shardGold: new THREE.MeshStandardMaterial({
+          color: 0xffb703,
+          roughness: 0.10,
+          metalness: 0.98
+        })
+      };
+
+      // =========================================================================
+      // 6. DOLGUN ATEŞ TONLU GOTİK ARENA ZEMİNİ & 🔥 GERÇEK ALEV MANGALLARI (ARGON 4)
+      // =========================================================================
+      const animatedFires = [];
+      let emberSystem = null;
+
+      // Matematiksel 🔥 Organik Alev Dili Geometrisi Üreteci
+      function createFlameTongueGeo(height, baseRadius, curveX, curveZ) {
+        // 8 dairesel kesit, 10 dikey segment
+        const geo = new THREE.CylinderGeometry(0.01, baseRadius, height, 9, 10, true);
+        const pos = geo.attributes.position;
+        const arr = pos.array;
+
+        // Geometriyi taban y=0 olacak şekilde yukarı kaydır
+        for (let i = 0; i < pos.count; i++) {
+          const idx = i * 3;
+          let y = arr[idx + 1] + height * 0.5; // [0, height]
+          const t = Math.max(0, Math.min(1, y / height)); // 0 = dip, 1 = tepe sivri uç
+
+          // Doğal alev şişkinliği: Dipte dar, 0.25'te geniş göbek, 0.70'te incelen boyun, 1.0'da sivri uç
+          let profile = 1.0;
+          if (t < 0.25) {
+            profile = 0.75 + (t / 0.25) * 0.45; // 0.75 -> 1.20
+          } else {
+            profile = 1.20 * Math.pow(1.0 - t, 0.75) + 0.05;
+          }
+
+          // Alev dili kıvrımı (S-eğrisi veya dışa yayılma)
+          const bendFactor = Math.pow(t, 1.6);
+          arr[idx] = arr[idx] * profile + curveX * bendFactor;
+          arr[idx + 1] = y;
+          arr[idx + 2] = arr[idx + 2] * profile + curveZ * bendFactor;
+        }
+
+        geo.computeVertexNormals();
+        return geo;
+      }
+
+      function buildCathedral() {
+        const stoneGeos = [];
+        const goldGeos = [];
+
+        // Dolgun Koyu Obsidyen & Volkanik Bazalt Arena Podyumu (Geniş, ateş yansımalı, engelsiz)
+        stoneGeos.push(xformGeo(new THREE.CylinderGeometry(6.6, 7.4, 0.38, 8), 0, -0.42, 0, 0, Math.PI / 8, 0));
+        stoneGeos.push(xformGeo(new THREE.CylinderGeometry(13.0, 13.0, 0.22, 16), 0, -0.72, 0));
+
+        // Podyumun kenarında akkor kehribar altın friz bordür çemberi
+        goldGeos.push(xformGeo(new THREE.TorusGeometry(6.62, 0.05, 8, 36), 0, -0.23, 0, Math.PI / 2, 0, 0));
+
+        // =======================================================================
+        // 🏛️ SPRINT 2: GOTİK KATEDRAL MİMARİSİ (ARKA PLAN SÜTUNLARI & VİTRAY PENCERE)
+        // =======================================================================
+        // 4 Adet Arka Gotik Sütun (Tahtayı örtmeyen, sinematik derinlik kazandıran sütunlar)
+        const pillarPositions = [
+          [-6.2, -8.2], [6.2, -8.2],
+          [-9.0, -4.5], [9.0, -4.5]
+        ];
+        pillarPositions.forEach(pos => {
+          const px = pos[0];
+          const pz = pos[1];
+          // Sütun kaidesi
+          stoneGeos.push(xformGeo(new THREE.BoxGeometry(0.85, 0.50, 0.85), px, -0.30, pz));
+          // Yivli gövde
+          stoneGeos.push(xformGeo(new THREE.CylinderGeometry(0.38, 0.42, 10.0, 12), px, 4.60, pz));
+          // Altın sütun başlığı
+          goldGeos.push(xformGeo(new THREE.CylinderGeometry(0.55, 0.38, 0.35, 12), px, 1.80, pz));
+          goldGeos.push(xformGeo(new THREE.TorusGeometry(0.48, 0.035, 8, 20), px, 1.95, pz, Math.PI / 2, 0, 0));
+        });
+
+        const cathedralMesh = new THREE.Mesh(mergeBufferGeos(stoneGeos), MATERIALS.cathedralStone);
+        cathedralMesh.matrixAutoUpdate = false;
+        cathedralMesh.updateMatrix();
+        worldGroup.add(cathedralMesh);
+
+        const goldTrim = new THREE.Mesh(mergeBufferGeos(goldGeos), MATERIALS.runeGold);
+        goldTrim.matrixAutoUpdate = false;
+        goldTrim.updateMatrix();
+        worldGroup.add(goldTrim);
+
+        // Arka Duvarda Parlayan Gotik Vitray Gül Pencere Silüeti (Büyülü Katedral Atmosferi)
+        const roseWinGeo = new THREE.RingGeometry(1.6, 2.4, 24);
+        const roseWinMat = new THREE.MeshBasicMaterial({
+          color: 0xff6a00,
+          transparent: true,
+          opacity: 0.28,
+          side: THREE.DoubleSide
+        });
+        const roseWin = new THREE.Mesh(roseWinGeo, roseWinMat);
+        roseWin.position.set(0, 6.2, -13.5);
+        worldGroup.add(roseWin);
+
+        // Vitray içi altın runik halka
+        const roseInner = new THREE.Mesh(
+          new THREE.RingGeometry(0.4, 1.2, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffab00, transparent: true, opacity: 0.22, side: THREE.DoubleSide })
+        );
+        roseInner.position.set(0, 6.2, -13.48);
+        worldGroup.add(roseInner);
+
+        // İki noktada Google/Pro Unity kalitesinde gerçekçi 🔥 alev mangalları (Sol ve Sağ)
+        buildFireBrazier(-4.85, 0.0, -1);
+        buildFireBrazier(4.85, 0.0, 1);
+        buildEmberParticles();
+      }
+
+      function buildFireBrazier(x, z, sideDir) {
+        const group = new THREE.Group();
+        group.position.set(x, -0.22, z);
+
+        // Döküm gotik demir ve akkor altın mangal kadehi kaidesi
+        const standGeos = [];
+        standGeos.push(xformGeo(new THREE.CylinderGeometry(0.42, 0.52, 0.16, 12), 0, 0.08, 0));
+        standGeos.push(xformGeo(new THREE.CylinderGeometry(0.20, 0.30, 0.48, 10), 0, 0.38, 0));
+        standGeos.push(xformGeo(new THREE.CylinderGeometry(0.56, 0.24, 0.38, 12), 0, 0.74, 0)); // mangal kadehi
+        standGeos.push(xformGeo(new THREE.TorusGeometry(0.56, 0.045, 8, 24), 0, 0.93, 0, Math.PI / 2, 0, 0));
+
+        const standMesh = new THREE.Mesh(mergeBufferGeos(standGeos), MATERIALS.royalGold);
+        group.add(standMesh);
+
+        // İçteki volkanik akkor lav köz yatağı
+        const coalGeo = new THREE.SphereGeometry(0.44, 12, 8);
+        coalGeo.scale(1.0, 0.38, 1.0);
+        const coalMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+        const coalMesh = new THREE.Mesh(coalGeo, coalMat);
+        coalMesh.position.y = 0.86;
+        group.add(coalMesh);
+
+        // =======================================================================
+        // 🔥 GERÇEK 3D ALEV ANATOMİSİ: 5 KATMANLI ORGANİK YAPRAKLAR (EMOJI FORMU)
+        // =======================================================================
+        const flameGroup = new THREE.Group();
+        flameGroup.position.y = 0.88;
+        group.add(flameGroup);
+
+        // 1. Mavi Akkor Kök (Mangal dibindeki gaz alevi mavisi)
+        const blueRootGeo = new THREE.CylinderGeometry(0.02, 0.32, 0.26, 8, 1, true);
+        blueRootGeo.translate(0, 0.13, 0);
+        const blueRoot = new THREE.Mesh(blueRootGeo, MATERIALS.flameBlueBase);
+        flameGroup.add(blueRoot);
+
+        // 2. Akkor Beyaz-Sarı Kalp Çekirdeği (Yoğun iç parlama)
+        const whiteCoreGeo = createFlameTongueGeo(0.68, 0.20, 0.0, 0.0);
+        const whiteCore = new THREE.Mesh(whiteCoreGeo, MATERIALS.flameWhiteCore);
+        flameGroup.add(whiteCore);
+
+        // 3. Ana Merkez Alev Dili (Tepeye uzanan parlak kehribar alev sütunu)
+        const mainTongueGeo = createFlameTongueGeo(1.22, 0.34, 0.06 * sideDir, -0.04);
+        const mainTongue = new THREE.Mesh(mainTongueGeo, MATERIALS.flameAmberBody);
+        flameGroup.add(mainTongue);
+
+        // 4. Sol Kanat Alev Dili (Sola doğru kıvrılıp açılan sivri alev yaprağı)
+        const leftWingGeo = createFlameTongueGeo(1.05, 0.26, -0.24, 0.05);
+        const leftWing = new THREE.Mesh(leftWingGeo, MATERIALS.flameRedWing);
+        leftWing.rotation.y = 0.35;
+        flameGroup.add(leftWing);
+
+        // 5. Sağ Kanat Alev Dili (Sağa doğru çatallanıp yükselen alev yaprağı)
+        const rightWingGeo = createFlameTongueGeo(1.12, 0.28, 0.26, -0.05);
+        const rightWing = new THREE.Mesh(rightWingGeo, MATERIALS.flameRedWing);
+        rightWing.rotation.y = -0.40;
+        flameGroup.add(rightWing);
+
+        // 6. Ön & Arka Alev Dilleri (3D Derinlik ve hacim kazandıran çapraz diller)
+        const frontLickGeo = createFlameTongueGeo(0.82, 0.22, 0.02, 0.18);
+        const frontLick = new THREE.Mesh(frontLickGeo, MATERIALS.flameAmberBody);
+        flameGroup.add(frontLick);
+
+        const backLickGeo = createFlameTongueGeo(0.88, 0.22, -0.04, -0.18);
+        const backLick = new THREE.Mesh(backLickGeo, MATERIALS.flameRedWing);
+        flameGroup.add(backLick);
+
+        worldGroup.add(group);
+
+        animatedFires.push({
+          group: flameGroup,
+          main: mainTongue,
+          left: leftWing,
+          right: rightWing,
+          front: frontLick,
+          back: backLick,
+          white: whiteCore,
+          blue: blueRoot,
+          sideDir: sideDir,
+          offset: Math.random() * 20
+        });
+      }
+
+      // Mangallardan göğe doğru yükselen kıvılcım ve köz parçacıkları (Embers)
+      function buildEmberParticles() {
+        const count = 64;
+        const geo = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const emberData = [];
+
+        for (let i = 0; i < count; i++) {
+          const isLeft = i % 2 === 0;
+          const baseX = isLeft ? -4.85 : 4.85;
+          const x = baseX + (Math.random() - 0.5) * 0.45;
+          const y = 0.88 + Math.random() * 2.2;
+          const z = (Math.random() - 0.5) * 0.45;
+
+          positions[i * 3] = x;
+          positions[i * 3 + 1] = y;
+          positions[i * 3 + 2] = z;
+
+          emberData.push({
+            isLeft,
+            baseX,
+            x,
+            y,
+            z,
+            speed: 0.9 + Math.random() * 1.4,
+            freq: 3.0 + Math.random() * 4.0,
+            drift: (Math.random() - 0.5) * 0.4
+          });
+        }
+
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const mat = new THREE.PointsMaterial({
+          color: 0xff9900,
+          size: 0.09,
+          transparent: true,
+          opacity: 0.90,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+
+        emberSystem = {
+          mesh: new THREE.Points(geo, mat),
+          data: emberData,
+          positions: positions,
+          attr: geo.attributes.position
+        };
+        worldGroup.add(emberSystem.mesh);
+      }
+
+      buildCathedral();
+
+      // =========================================================================
+      // 7. SATRANÇ TAHTASI (ENGELSİZ, TEMİZ KENARLI & YÜKSEK KONTRASTLI)
+      // =========================================================================
+      const boardGroup = new THREE.Group();
+      worldGroup.add(boardGroup);
+
+      const squareMap = {};
+      (function buildBoard() {
+        const lightGeos = [];
+        const darkGeos = [];
+
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const x = (c - 3.5);
+            const z = (r - 3.5);
+            const rank = 8 - r;
+            const sq = String.fromCharCode(97 + c) + rank;
+            const isLight = (r + c) % 2 === 0;
+            squareMap[sq] = { x, z, row: r, col: c, isLight };
+
+            const tileGeo = xformGeo(new THREE.BoxGeometry(0.992, 0.12, 0.992), x, -0.03, z);
+            if (isLight) lightGeos.push(tileGeo);
+            else darkGeos.push(tileGeo);
+          }
+        }
+
+        const lightMesh = new THREE.Mesh(mergeBufferGeos(lightGeos), MATERIALS.lightSquare);
+        lightMesh.receiveShadow = true;
+        lightMesh.matrixAutoUpdate = false;
+        lightMesh.updateMatrix();
+        boardGroup.add(lightMesh);
+
+        const darkMesh = new THREE.Mesh(mergeBufferGeos(darkGeos), MATERIALS.darkSquare);
+        darkMesh.receiveShadow = true;
+        darkMesh.matrixAutoUpdate = false;
+        darkMesh.updateMatrix();
+        boardGroup.add(darkMesh);
+
+        // Koyu abanoz alt kaide
+        const baseBox = new THREE.Mesh(new THREE.BoxGeometry(8.52, 0.24, 8.52), MATERIALS.ebonyFrame);
+        baseBox.position.y = -0.15;
+        baseBox.receiveShadow = true;
+        boardGroup.add(baseBox);
+
+        // İnce, şık altın pah çerçevesi (Köşe sütunları kaldırıldı - tamamen açık ve net)
+        const frameGeos = [];
+        frameGeos.push(xformGeo(new THREE.BoxGeometry(8.40, 0.14, 0.20), 0, -0.04, 4.10));
+        frameGeos.push(xformGeo(new THREE.BoxGeometry(8.40, 0.14, 0.20), 0, -0.04, -4.10));
+        frameGeos.push(xformGeo(new THREE.BoxGeometry(0.20, 0.14, 8.00), -4.10, -0.04, 0));
+        frameGeos.push(xformGeo(new THREE.BoxGeometry(0.20, 0.14, 8.00), 4.10, -0.04, 0));
+
+        const goldFrame = new THREE.Mesh(mergeBufferGeos(frameGeos), MATERIALS.runeGold);
+        goldFrame.castShadow = true;
+        goldFrame.receiveShadow = true;
+        boardGroup.add(goldFrame);
+      })();
+
+      // Seçim, Son Hamle ve Yasal Hamle Göstergeleri
+      const selectionRingGroup = new THREE.Group();
+      const selOuter = new THREE.Mesh(
+        new THREE.RingGeometry(0.37, 0.46, 28),
+        new THREE.MeshBasicMaterial({ color: 0xffd700, side: THREE.DoubleSide })
+      );
+      selOuter.rotation.x = -Math.PI / 2;
+      const selInner = new THREE.Mesh(
+        new THREE.CircleGeometry(0.36, 24),
+        new THREE.MeshBasicMaterial({ color: 0xffc400, transparent: true, opacity: 0.26, side: THREE.DoubleSide })
+      );
+      selInner.rotation.x = -Math.PI / 2;
+      selectionRingGroup.add(selOuter, selInner);
+      selectionRingGroup.visible = false;
+      boardGroup.add(selectionRingGroup);
+
+      function makeMoveHighlight(colorHex) {
+        const m = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.92, 0.92),
+          new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 0.34, side: THREE.DoubleSide })
+        );
+        m.rotation.x = -Math.PI / 2;
+        m.visible = false;
+        boardGroup.add(m);
+        return m;
+      }
+      const lastFromHighlight = makeMoveHighlight(0xffab00);
+      const lastToHighlight = makeMoveHighlight(0xffd740);
+
+      const indicatorGroup = new THREE.Group();
+      boardGroup.add(indicatorGroup);
+      const sharedDotGeo = new THREE.RingGeometry(0.10, 0.21, 20);
+      const sharedCapGeo = new THREE.RingGeometry(0.35, 0.46, 24);
+      const sharedDotMat = new THREE.MeshBasicMaterial({ color: 0x00e676, side: THREE.DoubleSide, transparent: true, opacity: 0.88 });
+      const sharedCapMat = new THREE.MeshBasicMaterial({ color: 0xff1744, side: THREE.DoubleSide, transparent: true, opacity: 0.92 });
+
+      function clearTargetIndicators() {
+        while (indicatorGroup.children.length > 0) {
+          indicatorGroup.remove(indicatorGroup.children[0]);
+        }
+      }
+
+      // =========================================================================
+      // 8. ÖNBELLEKLİ SAVAŞÇI TAŞ ŞABLONLARI (6 TİP SADECE 1 KEZ ÜRETİLİR!)
+      // =========================================================================
+      function latheGeo(pts, segs) {
+        const v2 = pts.map(p => new THREE.Vector2(p[0], p[1]));
+        return new THREE.LatheGeometry(v2, segs || 14);
+      }
+
+      const PIECE_TEMPLATES = {};
+
+      function buildPieceTemplates() {
+        const types = ['p', 'r', 'n', 'b', 'q', 'k'];
+
+        types.forEach(type => {
+          const armor = [];
+          const gold = [];
+          const gem = [];
+
+          // Sağlam, Asil Altın Kuşaklı Kaide (Koyu karelerde ve açık karelerde net kontrast)
+          const addPedestal = (s) => {
+            gold.push(xformGeo(new THREE.CylinderGeometry(0.38 * s, 0.42 * s, 0.065, 18), 0, 0.032, 0));
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.33 * s, 0.38 * s, 0.095, 18), 0, 0.105, 0));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.34 * s, 0.024, 8, 20), 0, 0.155, 0, Math.PI / 2, 0, 0));
+          };
+
+          if (type === 'p') {
+            // 1. PİYON: En kompakt taş. İnce zarif boyun ve TEPEDE BÜYÜK PARLAK KÜRE (Tepeden anında %100 Piyon)
+            addPedestal(0.86);
+            armor.push(latheGeo([[0.25, 0.15], [0.20, 0.36], [0.14, 0.56], [0.16, 0.68], [0.10, 0.74], [0, 0.75]], 16));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.15, 0.022, 6, 16), 0, 0.52, 0, Math.PI / 2, 0, 0));
+
+            // İnce boyun ve üstteki belirgin küre başlık
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.09, 0.11, 0.12, 14), 0, 0.81, 0));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.12, 0.022, 6, 16), 0, 0.87, 0, Math.PI / 2, 0, 0));
+            // Büyük parlak başlık küresi
+            armor.push(xformGeo(new THREE.SphereGeometry(0.18, 18, 16), 0, 1.04, 0));
+            gold.push(xformGeo(new THREE.SphereGeometry(0.06, 10, 10), 0, 1.22, 0));
+
+          } else if (type === 'r') {
+            // 2. KALE: Ağır Mazgallı Kule Kalesi (Tepeden bakıldığında 4 Köşe Mazgalıyla %100 Kale)
+            addPedestal(1.02);
+            armor.push(latheGeo([[0.33, 0.15], [0.30, 0.42], [0.28, 0.72], [0.32, 0.84], [0, 0.85]], 16));
+            gold.push(xformGeo(new THREE.CylinderGeometry(0.31, 0.31, 0.06, 16), 0, 0.52, 0));
+
+            // Mazgallı Kule Tepesi
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.24, 0.24, 0.18, 16), 0, 0.94, 0));
+            gold.push(xformGeo(new THREE.BoxGeometry(0.54, 0.08, 0.54), 0, 1.06, 0));
+            // 4 Köşede Yükselen Kalın Mazgal Burçları
+            const bOff = 0.19;
+            gold.push(xformGeo(new THREE.BoxGeometry(0.15, 0.22, 0.15), bOff, 1.18, bOff));
+            gold.push(xformGeo(new THREE.BoxGeometry(0.15, 0.22, 0.15), -bOff, 1.18, bOff));
+            gold.push(xformGeo(new THREE.BoxGeometry(0.15, 0.22, 0.15), bOff, 1.18, -bOff));
+            gold.push(xformGeo(new THREE.BoxGeometry(0.15, 0.22, 0.15), -bOff, 1.18, -bOff));
+            // Mazgal içi zırh kaidesi
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.14, 0.14, 0.12, 12), 0, 1.12, 0));
+
+          } else if (type === 'n') {
+            // 3. AT: Belirgin Şövalye At Başı, Uzun Kafa, Kulaklar ve Kabartmalı Altın Yele (%100 At)
+            addPedestal(0.98);
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.26, 0.34, 0.34, 14), 0, 0.28, 0));
+            // Güçlü kavisli at boynu
+            armor.push(xformGeo(new THREE.BoxGeometry(0.26, 0.58, 0.36), 0, 0.64, 0.05, -0.34, 0, 0));
+            // Öne uzanan asil at kafası ve çene
+            armor.push(xformGeo(new THREE.BoxGeometry(0.24, 0.25, 0.50), 0, 0.92, 0.24, 0.32, 0, 0));
+            armor.push(xformGeo(new THREE.ConeGeometry(0.12, 0.22, 8), 0, 0.86, 0.50, 1.45, 0, 0));
+
+            // Altın Alın Zırhı
+            gold.push(xformGeo(new THREE.BoxGeometry(0.25, 0.08, 0.42), 0, 1.00, 0.24, 0.32, 0, 0));
+
+            // Parlayan Cevher Gözler
+            gem.push(xformGeo(new THREE.SphereGeometry(0.04, 8, 8), 0.13, 0.98, 0.20));
+            gem.push(xformGeo(new THREE.SphereGeometry(0.04, 8, 8), -0.13, 0.98, 0.20));
+
+            // Dik Sivri Kulaklar
+            armor.push(xformGeo(new THREE.ConeGeometry(0.055, 0.22, 6), 0.09, 1.18, 0.04, -0.15, 0, 0.15));
+            armor.push(xformGeo(new THREE.ConeGeometry(0.055, 0.22, 6), -0.09, 1.18, 0.04, -0.15, 0, -0.15));
+
+            // Boyun Boyunca Uzanan Kalın Altın Yele
+            for (let p = 0; p < 6; p++) {
+              gold.push(xformGeo(
+                new THREE.BoxGeometry(0.085, 0.18, 0.15),
+                0, 1.14 - p * 0.13, -0.05 - Math.sin(p * 0.55) * 0.10,
+                -0.30 * p, 0, 0
+              ));
+            }
+
+          } else if (type === 'b') {
+            // 4. FİL: Gotik Başrahip Mitresi, Ortada Derin Altın Yarık ve Tepede Altın Elmas (%100 Fil)
+            addPedestal(0.96);
+            armor.push(latheGeo([[0.31, 0.15], [0.25, 0.46], [0.18, 0.80], [0.22, 0.96], [0.13, 1.06], [0, 1.07]], 16));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.19, 0.024, 8, 18), 0, 0.78, 0, Math.PI / 2, 0, 0));
+
+            // Gotik Mitre Başlığı (İki yana ayrık)
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.12, 0.14, 0.16, 14), 0, 1.14, 0));
+            armor.push(xformGeo(new THREE.ConeGeometry(0.16, 0.40, 14), 0, 1.36, 0));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.15, 0.022, 6, 16), 0, 1.20, 0, Math.PI / 2, 0, 0));
+            // Mitre Derin Kesik Yarık Hattı
+            gold.push(xformGeo(new THREE.BoxGeometry(0.045, 0.38, 0.32), 0, 1.36, 0));
+            // Tepede Parlayan Altın Elmas / Cevher
+            gold.push(xformGeo(new THREE.OctahedronGeometry(0.14, 0), 0, 1.62, 0));
+            gem.push(xformGeo(new THREE.OctahedronGeometry(0.09, 0), 0, 1.62, 0));
+
+          } else if (type === 'q') {
+            // 5. VEZİR: Kraliçe Koronası - 8 Sivri Altın Taç Yaprağı ve Ortada Dev Parlayan Mücevher (%100 Vezir)
+            addPedestal(1.04);
+            armor.push(latheGeo([[0.34, 0.15], [0.27, 0.50], [0.18, 0.78], [0.23, 1.02], [0.14, 1.12], [0, 1.13]], 18));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.20, 0.025, 8, 20), 0, 0.78, 0, Math.PI / 2, 0, 0));
+            gold.push(xformGeo(new THREE.CylinderGeometry(0.24, 0.18, 0.16, 16), 0, 1.04, 0));
+
+            // Kraliçe Tacı: Genişleyen Korona Kaidesi
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.14, 0.14, 0.20, 16), 0, 1.22, 0));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.19, 0.026, 8, 20), 0, 1.32, 0, Math.PI / 2, 0, 0));
+            // 8 Adet Dışa Açılan Parlak Altın Taç Ucu (Tepeden anında çiçek/taç formu)
+            for (let s = 0; s < 8; s++) {
+              const a = (s / 8) * Math.PI * 2;
+              gold.push(xformGeo(new THREE.ConeGeometry(0.042, 0.26, 8), Math.cos(a) * 0.175, 1.45, Math.sin(a) * 0.175));
+              gold.push(xformGeo(new THREE.SphereGeometry(0.035, 8, 8), Math.cos(a) * 0.175, 1.58, Math.sin(a) * 0.175));
+            }
+            // Merkezde Dev Parlayan Kraliyet Cevheri
+            gem.push(xformGeo(new THREE.SphereGeometry(0.15, 16, 14), 0, 1.42, 0));
+
+          } else if (type === 'k') {
+            // 6. ŞAH: EN UZUN VE HEYBETLİ TAŞ (1.82 boy). TEPEDE DEVASA KALIN ALTIN HAÇ (%100 ŞAH)
+            addPedestal(1.10);
+            armor.push(latheGeo([[0.37, 0.15], [0.31, 0.56], [0.23, 0.86], [0.29, 1.12], [0.18, 1.22], [0, 1.23]], 18));
+            gold.push(xformGeo(new THREE.BoxGeometry(0.14, 0.60, 0.06), 0, 0.86, 0.23));
+            gold.push(xformGeo(new THREE.TorusGeometry(0.26, 0.028, 8, 20), 0, 0.82, 0, Math.PI / 2, 0, 0));
+
+            // İmparatorluk Kubbe Tacı
+            armor.push(xformGeo(new THREE.CylinderGeometry(0.16, 0.16, 0.22, 16), 0, 1.30, 0));
+            gold.push(xformGeo(new THREE.CylinderGeometry(0.19, 0.17, 0.14, 16), 0, 1.44, 0));
+            gold.push(xformGeo(new THREE.SphereGeometry(0.17, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), 0, 1.48, 0));
+
+            // EN TEPEDE BÜYÜK VE KALIN ALTIN HAÇ (Kuşbakışı ve Yandan Anında Tanınır)
+            // Yatay bar (0.48 genişlik)
+            gold.push(xformGeo(new THREE.BoxGeometry(0.48, 0.12, 0.12), 0, 1.76, 0));
+            // Dikey bar (0.48 yükseklik)
+            gold.push(xformGeo(new THREE.BoxGeometry(0.12, 0.48, 0.12), 0, 1.76, 0));
+            // Haçın merkezinde her iki yöne bakan parlak yakut/safir mücevher
+            gem.push(xformGeo(new THREE.SphereGeometry(0.08, 10, 10), 0, 1.76, 0.065));
+            gem.push(xformGeo(new THREE.SphereGeometry(0.08, 10, 10), 0, 1.76, -0.065));
+          }
+
+          PIECE_TEMPLATES[type] = {
+            armorGeo: mergeBufferGeos(armor),
+            goldGeo: mergeBufferGeos(gold),
+            gemGeo: mergeBufferGeos(gem)
+          };
+        });
+      }
+      buildPieceTemplates();
+
+      const sharedContactGeo = new THREE.CircleGeometry(0.42, 20);
+
+      function createWarriorPiece(type, isWhite) {
+        const tpl = PIECE_TEMPLATES[type] || PIECE_TEMPLATES.p;
+        const root = new THREE.Group();
+        const bodyGroup = new THREE.Group();
+        root.add(bodyGroup);
+
+        const armorMat = isWhite ? MATERIALS.whiteArmor : MATERIALS.blackArmor;
+        // Beyaz taşlarda koyu imparatorluk bronzu, siyah taşlarda parlak kraliyet altını!
+        const goldMat = isWhite ? MATERIALS.whiteTrim : MATERIALS.royalGold;
+        const gemMat = isWhite ? MATERIALS.whiteGem : MATERIALS.blackGem;
+
+        // Taş Tabanı Temas Gölgesi (Ambient Occlusion - Taşın Tahtaya Oturma Hissi)
+        const shadowMesh = new THREE.Mesh(sharedContactGeo, MATERIALS.contactShadow);
+        shadowMesh.rotation.x = -Math.PI / 2;
+        shadowMesh.position.y = 0.002;
+        bodyGroup.add(shadowMesh);
+
+        if (tpl.armorGeo) {
+          const m = new THREE.Mesh(tpl.armorGeo, armorMat);
+          m.castShadow = true;
+          m.receiveShadow = true;
+          bodyGroup.add(m);
+        }
+        if (tpl.goldGeo) {
+          const m = new THREE.Mesh(tpl.goldGeo, goldMat);
+          m.castShadow = true;
+          bodyGroup.add(m);
+        }
+        if (tpl.gemGeo) {
+          bodyGroup.add(new THREE.Mesh(tpl.gemGeo, gemMat));
+        }
+
+        root.rotation.y = isWhite ? Math.PI : 0;
+        root.userData = { type, isWhite, bodyGroup };
+        return root;
+      }
+
+      // =========================================================================
+      // 9. TAŞ DİZİLİMİ (FEN) VE ANINDA YÜKLEME MOTORU
+      // =========================================================================
+      const piecesLayer = new THREE.Group();
+      boardGroup.add(piecesLayer);
+
+      let activePieces = {};
+      let isBoardFlipped = false;
+      let selectedSquareName = '';
+      let activeAnimations = [];
+      let activeDebris = [];
+      let activeShockwaves = [];
+      let shakeIntensity = 0;
+      let cameraTransition = null;
+
+      function clearAllPieces() {
+        while (piecesLayer.children.length > 0) {
+          piecesLayer.remove(piecesLayer.children[0]);
+        }
+        activePieces = {};
+      }
+
+      function placePieceAt(type, isWhite, square) {
+        const info = squareMap[square];
+        if (!info) return null;
+        const piece = createWarriorPiece(type, isWhite);
+        piece.position.set(info.x, 0.03, info.z);
+        piece.userData.square = square;
+        piecesLayer.add(piece);
+        activePieces[square] = piece;
+        return piece;
+      }
+
+      const INITIAL_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+      window.loadPosition = function (fen, flipped) {
+        const wasFlipped = isBoardFlipped;
+        isBoardFlipped = !!flipped;
+
+        activeAnimations = [];
+        clearAllPieces();
+        clearTargetIndicators();
+        selectionRingGroup.visible = false;
+        lastFromHighlight.visible = false;
+        lastToHighlight.visible = false;
+
+        const boardPart = (fen || INITIAL_FEN).split(' ')[0];
+        const rows = boardPart.split('/');
+
+        for (let r = 0; r < Math.min(8, rows.length); r++) {
+          let c = 0;
+          const rank = 8 - r;
+          for (let ch of rows[r]) {
+            if (ch >= '1' && ch <= '8') {
+              c += parseInt(ch, 10);
+            } else {
+              const isWhite = ch === ch.toUpperCase();
+              const type = ch.toLowerCase();
+              const sq = String.fromCharCode(97 + c) + rank;
+              placePieceAt(type, isWhite, sq);
+              c++;
+            }
+          }
+        }
+
+        if (wasFlipped !== isBoardFlipped && currentPreset === 'player') {
+          applyCameraPreset('player', true);
+        }
+        markShadowsDirty();
+      };
+
+      // =========================================================================
+      // 10. PROSEDÜREL 3B KATEDRAL AKUSTİĞİ & TAŞA ÖZEL SAVAŞ VFX (SPRINT 3 & 4)
+      // =========================================================================
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+            try {
+              const AC = window.AudioContext || window.webkitAudioContext;
+              this.ctx = new AC();
+            } catch (_) {}
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        },
+        playSelect() {
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(520, now);
+            osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.09);
+          } catch (_) {}
+        },
+        playMove() {
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            // Tok mermer bas darbesi
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(135, now);
+            osc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+            gain.gain.setValueAtTime(0.22, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          } catch (_) {}
+        },
+        playCapture(attackerType) {
+          this.init();
+          if (!this.ctx) return;
+          try {
+            const ctx = this.ctx;
+            const now = ctx.currentTime;
+
+            // =========================================================
+            // GERÇEKÇİ KILIÇ SAVURMA VE ÇELİK ÇARPIŞMASI (SWORD CLASH SFX)
+            // =========================================================
+
+            // 1. Kılıç Savurma / Havayı Yarma Efekti (Sword Swoosh / Slash)
+            const noiseDuration = 0.22;
+            const bufferSize = Math.floor(ctx.sampleRate * noiseDuration);
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              output[i] = Math.random() * 2 - 1;
+            }
+
+            const whiteNoise = ctx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+
+            const slashFilter = ctx.createBiquadFilter();
+            slashFilter.type = 'bandpass';
+            slashFilter.Q.setValueAtTime(3.2, now);
+            slashFilter.frequency.setValueAtTime(850, now);
+            slashFilter.frequency.exponentialRampToValueAtTime(3600, now + 0.06);
+            slashFilter.frequency.exponentialRampToValueAtTime(650, now + 0.20);
+
+            const slashGain = ctx.createGain();
+            slashGain.gain.setValueAtTime(0.001, now);
+            slashGain.gain.linearRampToValueAtTime(0.32, now + 0.05);
+            slashGain.gain.exponentialRampToValueAtTime(0.001, now + 0.21);
+
+            whiteNoise.connect(slashFilter);
+            slashFilter.connect(slashGain);
+            slashGain.connect(ctx.destination);
+
+            whiteNoise.start(now);
+            whiteNoise.stop(now + noiseDuration);
+
+            // 2. Kılıç Darbe Anı - Keskin Metal Kıvılcımı (Blade Strike Transient)
+            const impactTime = now + 0.05;
+            const sparkNoise = ctx.createBufferSource();
+            sparkNoise.buffer = noiseBuffer;
+
+            const sparkFilter = ctx.createBiquadFilter();
+            sparkFilter.type = 'highpass';
+            sparkFilter.frequency.setValueAtTime(4200, impactTime);
+
+            const sparkGain = ctx.createGain();
+            sparkGain.gain.setValueAtTime(0.30, impactTime);
+            sparkGain.gain.exponentialRampToValueAtTime(0.001, impactTime + 0.09);
+
+            sparkNoise.connect(sparkFilter);
+            sparkFilter.connect(sparkGain);
+            sparkGain.connect(ctx.destination);
+            sparkNoise.start(impactTime);
+            sparkNoise.stop(impactTime + 0.10);
+
+            // 3. Çelik Kılıç Çınlaması ve Rezonansı (Singing Steel Blade Ring)
+            // Çeliğin metalik darbe ve titreşim rezonans frekansları
+            const bladeFreqs = [1180, 2140, 3250, 4380];
+            const ringDuration = 0.68;
+
+            bladeFreqs.forEach((freq, idx) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+
+              osc.type = (idx === 0) ? 'triangle' : 'sine';
+              osc.frequency.setValueAtTime(freq, impactTime);
+              osc.frequency.exponentialRampToValueAtTime(freq * 0.985, impactTime + ringDuration);
+
+              const initialVol = 0.24 / (idx + 1);
+              gain.gain.setValueAtTime(0.001, impactTime);
+              gain.gain.linearRampToValueAtTime(initialVol, impactTime + 0.006);
+              gain.gain.exponentialRampToValueAtTime(0.0004, impactTime + ringDuration);
+
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+
+              osc.start(impactTime);
+              osc.stop(impactTime + ringDuration);
+            });
+          } catch (_) {}
+        }
+      };
+
+      const shardGeometries = [
+        new THREE.DodecahedronGeometry(0.088, 0),
+        new THREE.OctahedronGeometry(0.098, 0),
+        new THREE.TetrahedronGeometry(0.108, 0),
+        new THREE.BoxGeometry(0.11, 0.065, 0.09)
+      ];
+
+      function spawnCombatShatter(worldX, worldZ, victimIsWhite, attackerType) {
+        const baseArmorMat = victimIsWhite ? MATERIALS.shardWhite : MATERIALS.shardBlack;
+        const isRoyalAttack = (attackerType === 'q' || attackerType === 'k');
+        const isHeavyAttack = (attackerType === 'r' || isRoyalAttack);
+        const count = isRoyalAttack ? 26 : 22; // 60 FPS Argon Akıcılık Limiti (Sıfır Donma)
+
+        SFX.playCapture(attackerType);
+
+        for (let i = 0; i < count; i++) {
+          const isGold = (i % 3 === 0);
+          const geo = shardGeometries[i % shardGeometries.length];
+          const mat = isGold ? MATERIALS.shardGold : baseArmorMat;
+
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.castShadow = false; // Parçacıklar gölge hesaplamaz -> GPU %100 rahatlar!
+          const sc = 0.65 + Math.random() * 0.85;
+          mesh.scale.set(sc, sc * (0.65 + Math.random() * 0.5), sc);
+
+          const angle = Math.random() * Math.PI * 2;
+          const rad = Math.random() * 0.24;
+          mesh.position.set(
+            worldX + Math.cos(angle) * rad,
+            0.18 + Math.random() * 0.85,
+            worldZ + Math.sin(angle) * rad
+          );
+          mesh.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+          boardGroup.add(mesh);
+
+          const spd = (isHeavyAttack ? 2.6 : 2.0) + Math.random() * 4.4;
+          activeDebris.push({
+            mesh,
+            vx: Math.cos(angle) * spd,
+            vy: (isHeavyAttack ? 2.8 : 2.2) + Math.random() * 4.2,
+            vz: Math.sin(angle) * spd,
+            rx: (Math.random() - 0.5) * 14,
+            ry: (Math.random() - 0.5) * 14,
+            rz: (Math.random() - 0.5) * 14,
+            age: 0,
+            maxAge: 0.88 + Math.random() * 0.30
+          });
+        }
+
+        // Taşa Özel Büyülü Şok Dalgası Rengi
+        let waveColor = 0xffd740; // Varsayılan Altın
+        if (attackerType === 'q') waveColor = 0xff1744; // Vezir: Kızıl Yakut Novası
+        else if (attackerType === 'b') waveColor = 0x00e5ff; // Fil: Mistik Safir Işığı
+        else if (attackerType === 'r') waveColor = 0xff6d00; // Kale: Volkanik Sismik Dalga
+
+        const ringGeo = new THREE.RingGeometry(0.14, 0.34, 32);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: waveColor,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.96,
+          blending: THREE.AdditiveBlending
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = -Math.PI / 2;
+        ringMesh.position.set(worldX, 0.045, worldZ);
+        boardGroup.add(ringMesh);
+        activeShockwaves.push({ mesh: ringMesh, geo: ringGeo, mat: ringMat, age: 0, maxAge: 0.52 });
+
+        // Ağır/Kraliyet Saldırılarında İkinci Büyülü Halka (Çift Katmanlı Nova)
+        if (isHeavyAttack || attackerType === 'b') {
+          const ringGeo2 = new THREE.RingGeometry(0.08, 0.22, 28);
+          const ringMat2 = new THREE.MeshBasicMaterial({
+            color: 0xffd740,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.92,
+            blending: THREE.AdditiveBlending
+          });
+          const ringMesh2 = new THREE.Mesh(ringGeo2, ringMat2);
+          ringMesh2.rotation.x = -Math.PI / 2;
+          ringMesh2.position.set(worldX, 0.052, worldZ);
+          boardGroup.add(ringMesh2);
+          activeShockwaves.push({ mesh: ringMesh2, geo: ringGeo2, mat: ringMat2, age: -0.06, maxAge: 0.56 });
+        }
+
+        // Dinamik Darbe Flaşı + Sismik Sarsıntı
+        impactLight.color.setHex(waveColor);
+        impactLight.position.set(worldX, 1.5, worldZ);
+        impactLight.intensity = isHeavyAttack ? 5.2 : 4.2;
+        shakeIntensity = isHeavyAttack ? 0.085 : 0.055;
+
+        cameraTransition = null;
+        requestRender(55);
+        markShadowsDirty();
+      }
+
+      window.playMove = function (from, to, promotionType) {
+        const attacker = activePieces[from];
+        const fromInfo = squareMap[from];
+        const toInfo = squareMap[to];
+        if (!fromInfo || !toInfo || !attacker) return;
+
+        selectionRingGroup.visible = false;
+        clearTargetIndicators();
+
+        lastFromHighlight.position.set(fromInfo.x, 0.033, fromInfo.z);
+        lastFromHighlight.visible = true;
+        lastToHighlight.position.set(toInfo.x, 0.033, toInfo.z);
+        lastToHighlight.visible = true;
+
+        let victim = activePieces[to] || null;
+        let victimSq = to;
+
+        // Geçerken Alma (En Passant)
+        if (!victim && attacker.userData.type === 'p' && from[0] !== to[0]) {
+          const epSq = to[0] + from[1];
+          if (activePieces[epSq]) {
+            victim = activePieces[epSq];
+            victimSq = epSq;
+          }
+        }
+
+        // Rok (Castling)
+        if (attacker.userData.type === 'k' && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2) {
+          const rank = from[1];
+          const isKingSide = to[0] === 'g';
+          const rookFrom = (isKingSide ? 'h' : 'a') + rank;
+          const rookTo = (isKingSide ? 'f' : 'd') + rank;
+          const rookPiece = activePieces[rookFrom];
+          if (rookPiece && squareMap[rookTo]) {
+            delete activePieces[rookFrom];
+            activePieces[rookTo] = rookPiece;
+            rookPiece.userData.square = rookTo;
+            activeAnimations.push({
+              piece: rookPiece,
+              startAngle: rookPiece.rotation.y,
+              attackAngle: rookPiece.rotation.y,
+              finalAngle: rookPiece.userData.isWhite ? Math.PI : 0,
+              startX: squareMap[rookFrom].x,
+              startZ: squareMap[rookFrom].z,
+              endX: squareMap[rookTo].x,
+              endZ: squareMap[rookTo].z,
+              victim: null,
+              shattered: true,
+              isCapture: false,
+              elapsed: 0,
+              duration: 0.42,
+              promo: null,
+              targetSq: rookTo
+            });
+          }
+        }
+
+        delete activePieces[from];
+        if (victim && victimSq !== to) {
+          delete activePieces[victimSq];
+        }
+        activePieces[to] = attacker;
+        attacker.userData.square = to;
+
+        const targetAngle = Math.atan2(toInfo.x - fromInfo.x, toInfo.z - fromInfo.z);
+        let promo = promotionType || null;
+        if (!promo && attacker.userData.type === 'p' && (to[1] === '8' || to[1] === '1')) {
+          promo = 'q';
+        }
+
+        const isCapture = !!victim;
+        activeAnimations.push({
+          piece: attacker,
+          startAngle: attacker.rotation.y,
+          attackAngle: targetAngle,
+          finalAngle: attacker.userData.isWhite ? Math.PI : 0,
+          startX: fromInfo.x,
+          startZ: fromInfo.z,
+          endX: toInfo.x,
+          endZ: toInfo.z,
+          victim,
+          victimX: victim ? squareMap[victimSq].x : toInfo.x,
+          victimZ: victim ? squareMap[victimSq].z : toInfo.z,
+          shattered: false,
+          isCapture,
+          elapsed: 0,
+          duration: isCapture ? 0.52 : 0.34,
+          promo,
+          targetSq: to
+        });
+        requestRender(45);
+      };
+
+      window.selectSquare = function (square) {
+        selectedSquareName = square || '';
+        if (selectedSquareName && squareMap[selectedSquareName]) {
+          const info = squareMap[selectedSquareName];
+          selectionRingGroup.position.set(info.x, 0.036, info.z);
+          selectionRingGroup.visible = true;
+          SFX.playSelect();
+        } else {
+          selectionRingGroup.visible = false;
+          clearTargetIndicators();
+        }
+        requestRender(8);
+      };
+
+      window.setLegalTargets = function (targets) {
+        clearTargetIndicators();
+        if (!Array.isArray(targets)) {
+          requestRender(4);
+          return;
+        }
+        targets.forEach(sq => {
+          const info = squareMap[sq];
+          if (!info) return;
+          const isCap = !!activePieces[sq];
+          const m = new THREE.Mesh(
+            isCap ? sharedCapGeo : sharedDotGeo,
+            isCap ? sharedCapMat : sharedDotMat
+          );
+          m.rotation.x = -Math.PI / 2;
+          m.position.set(info.x, 0.037, info.z);
+          indicatorGroup.add(m);
+        });
+        requestRender(8);
+      };
+
+      // =========================================================================
+      // 11. EKRANI DEVASA DOLDURAN AKILLI KAMERA AÇILARI (BOŞLUKSUZ YERLEŞİM)
+      // =========================================================================
+      let currentPreset = 'player';
+      const camButtons = document.querySelectorAll('.cam-btn');
+
+      function getPresetConfig(name) {
+        const zSign = isBoardFlipped ? -1 : 1;
+        const w = Math.max(1, container.clientWidth);
+        const h = Math.max(1, container.clientHeight);
+        const aspect = w / h;
+        
+        // Tahta ve yan ateş mangalları (x = ±4.85) dikey ekranda tam oturacak mesafe:
+        const tanHalfV = Math.tan((camera.fov * Math.PI) / 360);
+        const tanHalfH = Math.min(aspect, 1.15) * tanHalfV;
+        const fitDist = (4.85 / tanHalfH) * 0.96;
+
+        switch (name) {
+          case 'overhead':
+            return {
+              pos: new THREE.Vector3(0, fitDist * 0.88, 0.01 * zSign),
+              target: new THREE.Vector3(0, 0, 0)
+            };
+          case 'side':
+            return {
+              pos: new THREE.Vector3(fitDist * 0.78 * zSign, fitDist * 0.52, 0),
+              target: new THREE.Vector3(0, 0.2, 0)
+            };
+          case 'cathedral':
+            return {
+              pos: new THREE.Vector3(-fitDist * 0.60 * zSign, fitDist * 0.58, fitDist * 0.60 * zSign),
+              target: new THREE.Vector3(0, 0.3, 0)
+            };
+          case 'player':
+          default:
+            return {
+              // Sinematik Oyuncu Açısı (~52°): Tahta + Sağ/Sol 🔥 Mangallar + Arka Katedral tam görünür
+              pos: new THREE.Vector3(0, fitDist * 0.68, fitDist * 0.64 * zSign),
+              target: new THREE.Vector3(0, -0.10, 0.0)
+            };
+        }
+      }
+
+      function applyCameraPreset(name, animate) {
+        currentPreset = name;
+        camButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.cam === name));
+        const cfg = getPresetConfig(name);
+        if (!animate) {
+          camera.position.copy(cfg.pos);
+          controls.target.copy(cfg.target);
+          controls.update();
+          requestRender(6);
+        } else {
+          cameraTransition = {
+            startPos: camera.position.clone(),
+            endPos: cfg.pos,
+            startTarget: controls.target.clone(),
+            endTarget: cfg.target,
+            elapsed: 0,
+            duration: 0.55
+          };
+          requestRender(45);
+        }
+      }
+
+      camButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applyCameraPreset(btn.dataset.cam, true);
+        });
+      });
+
+      applyCameraPreset('player', false);
+
+      // =========================================================================
+      // 12. MATEMATİKSEL ANINDA DOKUNMA ALGILAMA (RAYCAST YERİNE 0.02ms SAF MATEMATİK!)
+      // =========================================================================
+      const raycaster = new THREE.Raycaster();
+      const boardPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.03);
+      const hitPoint = new THREE.Vector3();
+      const pointerDownPos = { x: 0, y: 0, active: false };
+
+      renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (e.target.closest && e.target.closest('#hud-top')) return;
+        pointerDownPos.x = e.clientX;
+        pointerDownPos.y = e.clientY;
+        pointerDownPos.active = true;
+        requestRender(4);
+      });
+
+      renderer.domElement.addEventListener('pointerup', (e) => {
+        if (!pointerDownPos.active) return;
+        pointerDownPos.active = false;
+
+        const dx = e.clientX - pointerDownPos.x;
+        const dy = e.clientY - pointerDownPos.y;
+        if (Math.hypot(dx, dy) > 12) return;
+
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        raycaster.setFromCamera(ndc, camera);
+
+        // 1. Önce 3B taş silindirlerine çarpma kontrolü (uzun taşların gövdesine dokunulduğunda kendi karesini seçer)
+        let bestSq = null;
+        let bestDist = Infinity;
+        const ro = raycaster.ray.origin;
+        const rd = raycaster.ray.direction;
+
+        for (const sq in activePieces) {
+          const info = squareMap[sq];
+          // Işının (info.x, [0.05..1.35], info.z) dikey silindirine yaklaşımı
+          const ocX = ro.x - info.x;
+          const ocZ = ro.z - info.z;
+          const a = rd.x * rd.x + rd.z * rd.z;
+          if (a > 0.0001) {
+            const t = -(ocX * rd.x + ocZ * rd.z) / a;
+            if (t > 0 && t < bestDist) {
+              const hitY = ro.y + rd.y * t;
+              if (hitY >= 0.03 && hitY <= 1.38) {
+                const px = ocX + rd.x * t;
+                const pz = ocZ + rd.z * t;
+                if (px * px + pz * pz <= 0.145) {
+                  bestDist = t;
+                  bestSq = sq;
+                }
+              }
+            }
+          }
+        }
+
+        // 2. Taş gövdesine değmediyse doğrudan tahta düzlemi (y = 0.03) kesişimi
+        if (!bestSq && raycaster.ray.intersectPlane(boardPlane, hitPoint)) {
+          const col = Math.floor(hitPoint.x + 4.0);
+          const row = Math.floor(hitPoint.z + 4.0);
+          if (col >= 0 && col < 8 && row >= 0 && row < 8) {
+            bestSq = String.fromCharCode(97 + col) + (8 - row);
+          }
+        }
+
+        if (bestSq && window.FlutterBridge) {
+          window.FlutterBridge.postMessage(JSON.stringify({
+            event: 'squareTapped',
+            square: bestSq
+          }));
+        }
+      });
+
+      // =========================================================================
+      // 13. ANA ANİMASYON VE FİZİK DÖNGÜSÜ (60 FPS AKICI & AKILLI UYKU MODU)
+      // =========================================================================
+      let lastTime = performance.now();
+
+      function lerpAngle(a, b, t) {
+        let diff = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
+        if (diff < -Math.PI) diff += Math.PI * 2;
+        return a + diff * t;
+      }
+
+      function animate(now) {
+        requestAnimationFrame(animate);
+
+        const dt = Math.min((now - lastTime) * 0.001, 0.05);
+        lastTime = now;
+
+        const hasActiveWork =
+          cameraTransition !== null ||
+          activeAnimations.length > 0 ||
+          activeDebris.length > 0 ||
+          activeShockwaves.length > 0 ||
+          impactLight.intensity > 0.01 ||
+          shakeIntensity > 0.002;
+
+        // Kamera yumuşak geçişi (Yalnızca kullanıcı kamera açısı değiştirdiğinde)
+        if (cameraTransition) {
+          cameraTransition.elapsed += dt;
+          const rawT = Math.min(1, cameraTransition.elapsed / cameraTransition.duration);
+          const ease = 1 - Math.pow(1 - rawT, 3);
+          camera.position.lerpVectors(cameraTransition.startPos, cameraTransition.endPos, ease);
+          controls.target.lerpVectors(cameraTransition.startTarget, cameraTransition.endTarget, ease);
+          camera.lookAt(controls.target);
+          if (rawT >= 1) {
+            camera.position.copy(cameraTransition.endPos);
+            controls.target.copy(cameraTransition.endTarget);
+            camera.lookAt(cameraTransition.endTarget);
+            cameraTransition = null;
+            controls.update();
+          }
+        }
+
+        const controlsChanged = cameraTransition !== null ? false : controls.update();
+
+        if (!hasActiveWork && !controlsChanged && renderFramesRemaining <= 0) {
+          return; // Sahne tamamen durağanken GPU %0 yükte bekler -> Sıfır ısınma ve sıfır kasılma!
+        }
+        if (renderFramesRemaining > 0) renderFramesRemaining--;
+
+        // Saldırı, Sıçrama ve Silah Savurma Animasyonları
+        for (let i = activeAnimations.length - 1; i >= 0; i--) {
+          const anim = activeAnimations[i];
+          anim.elapsed += dt;
+          const t = Math.min(1, anim.elapsed / anim.duration);
+          const ease = 1 - Math.pow(1 - t, 3);
+          const curX = anim.startX + (anim.endX - anim.startX) * ease;
+          const curZ = anim.startZ + (anim.endZ - anim.startZ) * ease;
+          const isKnight = anim.piece.userData.type === 'n';
+          const peakH = anim.isCapture
+            ? (isKnight ? 1.48 : 1.20)
+            : (isKnight ? 0.65 : 0.30);
+          const jumpH = Math.sin(t * Math.PI) * peakH;
+
+          anim.piece.position.set(curX, 0.03 + jumpH, curZ);
+
+          if (t < 0.70) {
+            anim.piece.rotation.y = lerpAngle(anim.startAngle, anim.attackAngle, Math.min(1, t * 2.2));
+          } else {
+            anim.piece.rotation.y = lerpAngle(anim.attackAngle, anim.finalAngle, (t - 0.70) / 0.30);
+          }
+
+          if (anim.isCapture && !anim.shattered && t >= 0.65) {
+            anim.shattered = true;
+            if (anim.victim) {
+              piecesLayer.remove(anim.victim);
+              spawnCombatShatter(
+                anim.victimX,
+                anim.victimZ,
+                anim.victim.userData.isWhite,
+                anim.piece.userData.type
+              );
+              if (window.FlutterBridge) {
+                window.FlutterBridge.postMessage(JSON.stringify({ event: 'pieceCaptured' }));
+              }
+            }
+          }
+
+          if (t >= 1) {
+            anim.piece.position.set(anim.endX, 0.03, anim.endZ);
+            anim.piece.rotation.y = anim.finalAngle;
+            if (!anim.isCapture) {
+              SFX.playMove();
+            }
+            if (anim.promo) {
+              const isW = anim.piece.userData.isWhite;
+              piecesLayer.remove(anim.piece);
+              placePieceAt(anim.promo, isW, anim.targetSq);
+            }
+            shadowsDirty = true;
+            activeAnimations.splice(i, 1);
+          }
+        }
+
+        // 3B Parçacık Fiziği (Yer Çekimi, Sekme ve Sıfır İzle Yok Olma)
+        for (let i = activeDebris.length - 1; i >= 0; i--) {
+          const d = activeDebris[i];
+          d.age += dt;
+          if (d.age >= d.maxAge) {
+            boardGroup.remove(d.mesh);
+            activeDebris.splice(i, 1);
+            continue;
+          }
+          d.vy -= 14.5 * dt;
+          d.mesh.position.x += d.vx * dt;
+          d.mesh.position.y += d.vy * dt;
+          d.mesh.position.z += d.vz * dt;
+
+          if (d.mesh.position.y < 0.05) {
+            d.mesh.position.y = 0.05;
+            d.vy = Math.abs(d.vy) * 0.36;
+            d.vx *= 0.68;
+            d.vz *= 0.68;
+          }
+          d.mesh.rotation.x += d.rx * dt;
+          d.mesh.rotation.y += d.ry * dt;
+          d.mesh.rotation.z += d.rz * dt;
+
+          const life = d.age / d.maxAge;
+          if (life > 0.50) {
+            d.mesh.scale.multiplyScalar(0.95);
+          }
+        }
+
+        // Altın ve Büyülü Şok Dalgaları (Çift Katmanlı Nova Desteği)
+        for (let i = activeShockwaves.length - 1; i >= 0; i--) {
+          const sw = activeShockwaves[i];
+          sw.age += dt;
+          if (sw.age < 0) {
+            sw.mesh.visible = false;
+            continue;
+          }
+          sw.mesh.visible = true;
+          const t = sw.age / sw.maxAge;
+          if (t >= 1) {
+            boardGroup.remove(sw.mesh);
+            sw.geo.dispose();
+            sw.mat.dispose();
+            activeShockwaves.splice(i, 1);
+            continue;
+          }
+          const s = 1 + t * 4.8;
+          sw.mesh.scale.set(s, s, 1);
+          sw.mat.opacity = (1 - t) * 0.92;
+        }
+
+        // =========================================================================
+        // 8. GERÇEKÇİ 🔥 ALEV VE MEŞALE ANİMASYON MOTORU (ARGON 4 - PROSEDÜREL 60 FPS)
+        // =========================================================================
+        const nowSec = now * 0.001;
+        for (let i = 0; i < animatedFires.length; i++) {
+          const f = animatedFires[i];
+          const t = nowSec + f.offset;
+          
+          const pulseMain = Math.sin(t * 8.5) * 0.15 + Math.sin(t * 14.2) * 0.07;
+          const pulseWing = Math.cos(t * 9.8) * 0.18;
+          const swayX = Math.sin(t * 5.8) * 0.09;
+          const swayZ = Math.cos(t * 6.4) * 0.08;
+
+          // Ana Merkez Alev Dili: Boy uzaması ve organik kıvrılma
+          f.main.scale.set(
+            1.0 - pulseMain * 0.08,
+            1.0 + pulseMain * 1.25,
+            1.0 - pulseMain * 0.08
+          );
+          f.main.rotation.z = swayX * 0.7;
+          f.main.rotation.x = swayZ * 0.6;
+
+          // Sol ve Sağ Kanat Dilleri: Gerçek 🔥 gibi dışa ve yukarı çırpınma
+          f.left.scale.set(
+            1.0 + pulseWing * 0.10,
+            1.0 + Math.sin(t * 11.2) * 0.22,
+            1.0 + pulseWing * 0.10
+          );
+          f.left.rotation.z = -0.15 + Math.sin(t * 7.4) * 0.14;
+
+          f.right.scale.set(
+            1.0 - pulseWing * 0.10,
+            1.0 + Math.cos(t * 10.6) * 0.24,
+            1.0 - pulseWing * 0.10
+          );
+          f.right.rotation.z = 0.15 + Math.cos(t * 8.1) * 0.14;
+
+          // Ön ve Arka Küçük Alev Dilleri
+          f.front.scale.y = 1.0 + Math.sin(t * 12.0) * 0.20;
+          f.front.rotation.x = 0.12 + swayZ;
+          f.back.scale.y = 1.0 + Math.cos(t * 12.8) * 0.20;
+          f.back.rotation.x = -0.12 - swayZ;
+
+          // Akkor Beyaz Çekirdek & Mavi Gaz Kökü Nabzı
+          const corePulse = Math.sin(t * 16.5) * 0.12;
+          f.white.scale.set(1.0 + corePulse, 1.0 + corePulse * 1.4, 1.0 + corePulse);
+          f.blue.scale.set(1.0 + Math.cos(t * 13.0) * 0.06, 1.0, 1.0 + Math.sin(t * 13.0) * 0.06);
+
+          // Alev grubunun rüzgardaki hafif genel salınımı
+          f.group.rotation.y = Math.sin(t * 2.2) * 0.18;
+        }
+
+        // Kıvılcım parçacıkları süzülmesi (Yükselen Embers)
+        if (emberSystem) {
+          const p = emberSystem.positions;
+          const data = emberSystem.data;
+          for (let i = 0; i < data.length; i++) {
+            const e = data[i];
+            e.y += e.speed * dt;
+            e.x += Math.sin(nowSec * e.freq + i) * dt * 0.22;
+            e.z += Math.cos(nowSec * (e.freq * 0.9) + i) * dt * 0.22;
+
+            if (e.y > 3.2) {
+              e.y = 0.88;
+              e.x = e.baseX + (Math.random() - 0.5) * 0.40;
+              e.z = (Math.random() - 0.5) * 0.40;
+            }
+
+            p[i * 3] = e.x;
+            p[i * 3 + 1] = e.y;
+            p[i * 3 + 2] = e.z;
+          }
+          emberSystem.attr.needsUpdate = true;
+        }
+
+        // İki ateş ışığının alev dansıyla senkronize doğal titremesi (Flicker Effect)
+        if (fireLightLeft && fireLightRight) {
+          fireLightLeft.intensity = 1.80 + Math.sin(nowSec * 9.6) * 0.35 + (Math.random() - 0.5) * 0.12;
+          fireLightRight.intensity = 1.80 + Math.cos(nowSec * 9.0) * 0.35 + (Math.random() - 0.5) * 0.12;
+        }
+
+        // Büyülü Seçim Rünü: Dönen altın çember ve nabız atan aura (Sprint 3)
+        if (selectionRingGroup.visible) {
+          selOuter.rotation.z += 0.024;
+          const s = 1.0 + Math.sin(nowSec * 5.5) * 0.04;
+          selectionRingGroup.scale.set(s, s, s);
+        }
+
+        // Ateş efekti için daima canlı 60 FPS render isteği
+        requestRender(2);
+
+        // Darbe Işığı ve Kamera Sarsıntısı Sönümlemesi
+        if (impactLight.intensity > 0.01) {
+          impactLight.intensity *= Math.pow(0.015, dt * 3.5);
+        } else {
+          impactLight.intensity = 0;
+        }
+
+        if (shakeIntensity > 0.002) {
+          worldGroup.position.set(
+            (Math.random() - 0.5) * shakeIntensity,
+            (Math.random() - 0.5) * shakeIntensity * 0.7,
+            0
+          );
+          shakeIntensity *= Math.pow(0.01, dt * 3.0);
+        } else {
+          worldGroup.position.set(0, 0, 0);
+          shakeIntensity = 0;
+        }
+
+        if (shadowsDirty || activeAnimations.length > 0) {
+          renderer.shadowMap.needsUpdate = true;
+          shadowsDirty = false;
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      // Ekran Boyutu Değişimi (Tam Ekran Geçişlerinde Anında Uyum)
+      window.addEventListener('resize', () => {
+        const w = Math.max(1, container.clientWidth);
+        const h = Math.max(1, container.clientHeight);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+        applyCameraPreset(currentPreset, false);
+        requestRender(6);
+      });
+
+      // =========================================================================
+      // 9. ÇOKLU 3B RENK VE MATERYAL TEMALARI (ARGON 4 DİNAMİK PALET MOTORU)
+      // =========================================================================
+      const BOARD_THEMES = [
+        {
+          id: 'gothic',
+          name: 'Gotik Ateş Arenası',
+          lightColor: 0xc8a26c,
+          darkColor: 0x18131c,
+          whiteArmor: 0xffffff,
+          whiteGem: 0x0088ff,
+          blackArmor: 0x15111a,
+          blackGem: 0xff1744,
+          goldTrim: 0xffcc33,
+          arenaStone: 0x110a08,
+          lightEmissive: 0x000000,
+          blackEmissive: 0x000000
+        },
+        {
+          id: 'emerald',
+          name: 'Kraliyet Zümrüdü',
+          lightColor: 0xa8cbb7,
+          darkColor: 0x0d2b1d,
+          whiteArmor: 0xffffff,
+          whiteGem: 0x00e676,
+          blackArmor: 0x102018,
+          blackGem: 0xffd700,
+          goldTrim: 0xffd54f,
+          arenaStone: 0x07150e,
+          lightEmissive: 0x000000,
+          blackEmissive: 0x000000
+        },
+        {
+          id: 'volcano',
+          name: 'Volkanik Akkor',
+          lightColor: 0xd49b58,
+          darkColor: 0x220c05,
+          whiteArmor: 0xfff8ee,
+          whiteGem: 0xff3d00,
+          blackArmor: 0x180905,
+          blackGem: 0xffab00,
+          goldTrim: 0xff9100,
+          arenaStone: 0x120804,
+          lightEmissive: 0x000000,
+          blackEmissive: 0x000000
+        },
+        {
+          id: 'sapphire',
+          name: 'Mistik Safir',
+          lightColor: 0x9ec0d8,
+          darkColor: 0x0b1728,
+          whiteArmor: 0xffffff,
+          whiteGem: 0x00b0ff,
+          blackArmor: 0x0c1322,
+          blackGem: 0x7c4dff,
+          goldTrim: 0x80deea,
+          arenaStone: 0x060c16,
+          lightEmissive: 0x000000,
+          blackEmissive: 0x000000
+        }
+      ];
+
+      let currentThemeIdx = 0;
+      function applyBoardTheme(idx) {
+        currentThemeIdx = (idx + BOARD_THEMES.length) % BOARD_THEMES.length;
+        const th = BOARD_THEMES[currentThemeIdx];
+
+        MATERIALS.lightSquare.color.setHex(th.lightColor);
+        MATERIALS.darkSquare.color.setHex(th.darkColor);
+        MATERIALS.whiteArmor.color.setHex(th.whiteArmor);
+        MATERIALS.whiteArmor.emissive.setHex(th.lightEmissive);
+        MATERIALS.whiteGem.color.setHex(th.whiteGem);
+        MATERIALS.blackArmor.color.setHex(th.blackArmor);
+        MATERIALS.blackArmor.emissive.setHex(th.blackEmissive);
+        MATERIALS.blackGem.color.setHex(th.blackGem);
+        MATERIALS.royalGold.color.setHex(th.goldTrim);
+        MATERIALS.cathedralStone.color.setHex(th.arenaStone);
+
+        const toast = document.getElementById('theme-toast');
+        if (toast) {
+          toast.textContent = 'Tema: ' + th.name;
+          toast.style.opacity = '1';
+          clearTimeout(toast._timer);
+          toast._timer = setTimeout(() => {
+            toast.style.opacity = '0';
+          }, 1600);
+        }
+
+        markShadowsDirty();
+        requestRender(10);
+      }
+
+      const btnTheme = document.getElementById('btn-theme');
+      if (btnTheme) {
+        btnTheme.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applyBoardTheme(currentThemeIdx + 1);
+        });
+      }
+
+      window.loadPosition(INITIAL_FEN, false);
+      requestAnimationFrame(animate);
+
+      if (window.FlutterBridge) {
+        window.FlutterBridge.postMessage(JSON.stringify({ event: 'sceneReady' }));
+      }
+    })();
+  </script>
+</body>
+</html>

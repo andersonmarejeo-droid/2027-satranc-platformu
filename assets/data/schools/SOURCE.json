@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/dalgali/MEB-okul-listesi",
+  "commit": "0f2b3e6af008f283c1f9b43bdcbd1556eab8da1f",
+  "upstream": "https://www.meb.gov.tr/baglantilar/okullar/",
+  "capturedAt": "2026-08-31",
+  "downloadedAt": "2026-10-04T18:58:41.352Z",
+  "sourceSha256": "46a0529079d43c6b29062e33c03e29c8d6315ecbc4272006e177d327b10ec2a3",
+  "sourceRecordCount": 55216,
+  "includedCount": 55117,
+  "excludedNonProvinceCount": 99,
+  "coverage": "Source snapshot of public MEB school/institution websites; not a verified exhaustive list of all public/private schools.",
+  "repositoryLicense": "MIT",
+  "upstreamPermission": "Not established; legal review pending. Repository license does not prove MEB permission.",
+  "schoolType": "Inferred from institution name by source, not verified official classification."
+}

@@ -1,0 +1,52 @@
+﻿name: chess_platform
+description: Calm premium chess platform starter with feature-first architecture.
+publish_to: 'none'
+version: 0.8.7+21
+environment:
+  sdk: ^3.13.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  go_router: ^18.0.2
+  url_launcher: ^6.3.2
+  shared_preferences: ^2.5.5
+  chess: ^0.8.1
+  web: ^1.1.1
+  cupertino_icons: 1.0.9
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  firebase_app_check: ^0.4.8
+  firebase_crashlytics: ^5.4.0
+  firebase_performance: ^0.11.6
+  firebase_messaging: ^16.7.0
+  cloud_functions: ^6.5.0
+  webview_flutter: ^4.14.1
+  google_mobile_ads: ^9.2.0
+  flutter_local_notifications: 18.0.1
+  flutter_timezone: ^5.1.1
+  timezone: ^0.10.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  shared_preferences_platform_interface: ^2.4.2
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/wizard_chess/
+    - assets/data/schools/
+    - assets/textures/
+    - assets/meshes/
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto-regular.ttf
+        - asset: assets/fonts/roboto-medium.ttf
+          weight: 500
+        - asset: assets/fonts/roboto-bold.ttf
+          weight: 700

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "684650621962",
+    "project_id": "satranc-platformu",
+    "storage_bucket": "satranc-platformu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684650621962:android:3f60f4c755b0722d5a43f3",
+        "android_client_info": {
+          "package_name": "com.zpgames.satrancplatformu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeoOqFL7zf3Kffy8opBb3moPrDXYGMGfQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

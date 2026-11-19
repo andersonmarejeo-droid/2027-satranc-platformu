@@ -1,0 +1,486 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() { return request.auth != null; }
+    function invitePath(id) { return /databases/$(database)/documents/onlineInvites/$(id); }
+    function matchPath(id) { return /databases/$(database)/documents/onlineMatches/$(id); }
+    function resultPath(id) { return /databases/$(database)/documents/onlineResults/$(id); }
+    function accountPath(uid) { return /databases/$(database)/documents/playerAccounts/$(uid); }
+    function cardPath(id) { return /databases/$(database)/documents/communityScores/$(id); }
+    function claimPath(id) { return /databases/$(database)/documents/scoreClaims/$(id); }
+    function teamPath(scope,id) { return /databases/$(database)/documents/smallTeams/$(scope + '_' + id); }
+    function memberPath(scope,id,uid) { return /databases/$(database)/documents/smallTeamMembers/$(scope + '_' + id + '_' + uid); }
+    function verified() { return signed() && request.auth.token.get('email_verified',false) == true; }
+    function textId(value) { return value == null || (value is string && value.size() <= 140 && value.matches('^[A-Za-z0-9ÇĞİÖŞÜçğıöşü:_-]*$')); }
+    function membership(d) {
+      return d.keys().hasOnly(['version','countryId','cityId','schoolId','classId','groupIds'])
+        && d.version == 1 && textId(d.countryId) && textId(d.cityId)
+        && textId(d.schoolId) && textId(d.classId) && d.classId != ''
+        && (d.classId == null || d.schoolId != null)
+        && d.groupIds is list && d.groupIds.size() <= 10 && d.groupIds.toSet().size() == d.groupIds.size();
+    }
+    function groupDeltaAt(added,removed,index) {
+      return (added.size() <= index || (added[index] is string && textId(added[index]) && added[index] != ''
+        && existsAfter(memberPath('group',added[index],request.auth.uid))))
+        && (removed.size() <= index || !existsAfter(memberPath('group',removed[index],request.auth.uid)));
+    }
+    function teamTransition(next,old) {
+      let added = next.groupIds.removeAll(old.groupIds);
+      let removed = old.groupIds.removeAll(next.groupIds);
+      let moved = next.classId != old.classId;
+      return added.size() + removed.size() + (moved && old.classId != null ? 1 : 0) + (moved && next.classId != null ? 1 : 0) <= 6
+        && (!moved || ((next.classId == null || existsAfter(memberPath('classroom',next.classId,request.auth.uid)))
+          && (old.classId == null || !existsAfter(memberPath('classroom',old.classId,request.auth.uid)))))
+        && groupDeltaAt(added,removed,0) && groupDeltaAt(added,removed,1)
+        && groupDeltaAt(added,removed,2) && groupDeltaAt(added,removed,3)
+        && groupDeltaAt(added,removed,4) && groupDeltaAt(added,removed,5);
+    }
+    function inTeam(account,scope,id) {
+      return (scope == 'classroom' && account.membership.classId == id)
+        || (scope == 'group' && id in account.membership.groupIds);
+    }
+    // FCM registration tokens are private device credentials. They are never
+    // queryable by another player and can only be replaced by their owner.
+    match /notificationTokens/{uid} {
+      function validToken() {
+        let d = request.resource.data;
+        return signed() && uid == request.auth.uid
+          && d.keys().hasOnly(['token','platform','updatedAt'])
+          && d.token is string && d.token.size() >= 10 && d.token.size() <= 4096
+          && d.platform == 'android' && d.updatedAt == request.time;
+      }
+      allow get: if signed() && uid == request.auth.uid;
+      allow list: if false;
+      allow create,update: if validToken();
+      allow delete: if signed() && uid == request.auth.uid;
+    }
+    match /blockedPlayers/{id} {
+      allow get: if signed() && (id.matches('^' + request.auth.uid + '_.*') || resource.data.owner == request.auth.uid);
+      allow list: if signed() && resource.data.owner == request.auth.uid;
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['owner','blockedPlayer','createdAt'])
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.blockedPlayer is string
+        && request.resource.data.blockedPlayer.size() >= 1
+        && request.resource.data.blockedPlayer.size() <= 128
+        && request.resource.data.blockedPlayer != request.auth.uid
+        && id == request.auth.uid + '_' + request.resource.data.blockedPlayer
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if signed() && resource.data.owner == request.auth.uid;
+    }
+    // Reports are append-only for players. Moderation workers read them with
+    // privileged server credentials; players cannot discover reports or status.
+    match /safetyReports/{id} {
+      allow read,update,delete: if false;
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['reporter','reportedPlayer','reason','matchId','createdAt','status'])
+        && request.resource.data.reporter == request.auth.uid
+        && request.resource.data.reportedPlayer is string
+        && request.resource.data.reportedPlayer.size() >= 1
+        && request.resource.data.reportedPlayer.size() <= 128
+        && request.resource.data.reportedPlayer != request.auth.uid
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() >= 1
+        && request.resource.data.reason.size() <= 80
+        && request.resource.data.matchId is string
+        && request.resource.data.matchId.size() <= 80
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time;
+    }
+    match /smallTeams/{id} {
+      // Counts expose no names or player identifiers. Member documents are owner-private.
+      allow get: if signed();
+      allow list,delete: if false;
+      function validTeam() {
+        let d = request.resource.data;
+        return signed() && request.auth.token.firebase.sign_in_provider != 'anonymous'
+          && d.keys().hasOnly(['scope','communityId','count','updatedAt'])
+          && d.scope in ['classroom','group'] && textId(d.communityId) && d.communityId != null && d.communityId != ''
+          && id == d.scope + '_' + d.communityId
+          && d.count is int && d.count >= 0 && d.count <= 20 && d.updatedAt == request.time;
+      }
+      function joining() {
+        let d = request.resource.data;
+        return !exists(memberPath(d.scope,d.communityId,request.auth.uid))
+          && existsAfter(memberPath(d.scope,d.communityId,request.auth.uid))
+          && inTeam(getAfter(accountPath(request.auth.uid)).data,d.scope,d.communityId);
+      }
+      function leaving() {
+        let d = request.resource.data;
+        return exists(memberPath(d.scope,d.communityId,request.auth.uid))
+          && !existsAfter(memberPath(d.scope,d.communityId,request.auth.uid))
+          && (!existsAfter(accountPath(request.auth.uid)) || !inTeam(getAfter(accountPath(request.auth.uid)).data,d.scope,d.communityId));
+      }
+      allow create: if validTeam() && request.resource.data.count == 1 && joining();
+      allow update: if validTeam() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['count','updatedAt'])
+        && ((request.resource.data.count == resource.data.count + 1 && joining())
+          || (request.resource.data.count == resource.data.count - 1 && leaving()));
+    }
+    match /smallTeamMembers/{id} {
+      allow get: if signed() && id.matches('.*_' + request.auth.uid + '$');
+      allow list: if signed() && resource.data.uid == request.auth.uid;
+      allow create: if signed() && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && request.resource.data.keys().hasOnly(['uid','scope','communityId','joinedAt'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.scope in ['classroom','group']
+        && textId(request.resource.data.communityId) && request.resource.data.communityId != null && request.resource.data.communityId != ''
+        && id == request.resource.data.scope + '_' + request.resource.data.communityId + '_' + request.auth.uid
+        && request.resource.data.joinedAt == request.time
+        && inTeam(getAfter(accountPath(request.auth.uid)).data,request.resource.data.scope,request.resource.data.communityId)
+        && getAfter(teamPath(request.resource.data.scope,request.resource.data.communityId)).data.updatedAt == request.time
+        && getAfter(teamPath(request.resource.data.scope,request.resource.data.communityId)).data.count >= 1;
+      allow delete: if signed() && resource.data.uid == request.auth.uid
+        && (!existsAfter(accountPath(request.auth.uid)) || !inTeam(getAfter(accountPath(request.auth.uid)).data,resource.data.scope,resource.data.communityId))
+        && getAfter(teamPath(resource.data.scope,resource.data.communityId)).data.updatedAt == request.time;
+      allow update: if false;
+    }
+    match /playerAccounts/{uid} {
+      allow read: if signed() && uid == request.auth.uid;
+      allow delete: if signed() && uid == request.auth.uid && resource.data.membership.classId == null && resource.data.membership.groupIds.size() == 0;
+      function validAccount() {
+        return signed() && uid == request.auth.uid
+        && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && request.resource.data.keys().hasOnly(['displayName','membership','rankingEnabled','rankingCleanupPending','updatedAt'])
+        && request.resource.data.displayName is string && request.resource.data.displayName.size() >= 1
+        && request.resource.data.displayName.size() <= 24
+        && membership(request.resource.data.membership)
+        && request.resource.data.rankingEnabled is bool
+        && request.resource.data.get('rankingCleanupPending',false) is bool
+        && (!request.resource.data.get('rankingCleanupPending',false) || !request.resource.data.rankingEnabled)
+        && (!request.resource.data.rankingEnabled || verified())
+        && request.resource.data.updatedAt == request.time;
+      }
+      allow create: if validAccount() && teamTransition(request.resource.data.membership,{'classId':null,'groupIds':[]});
+      allow update: if validAccount() && teamTransition(request.resource.data.membership,resource.data.membership);
+    }
+    match /schoolSuggestions/{id} {
+      allow read,delete: if signed() && resource.data.uid == request.auth.uid;
+      allow create: if signed() && request.resource.data.uid == request.auth.uid
+        && id.matches('^' + request.auth.uid + '_[a-f0-9]{32}$')
+        && request.resource.data.keys().hasOnly(['uid','cityId','district','schoolName','createdAt'])
+        && textId(request.resource.data.cityId) && request.resource.data.cityId != ''
+        && request.resource.data.district is string && request.resource.data.district.size() <= 80
+        && request.resource.data.schoolName is string && request.resource.data.schoolName.size() >= 3
+        && request.resource.data.schoolName.size() <= 160 && request.resource.data.createdAt == request.time;
+    }
+    function validResultProfile(profile,uid) {
+      return profile.keys().hasOnly(['alias','optIn','countryId','cityId','schoolId','classId','groupIds'])
+        && ((profile.optIn == false && profile.alias == '' && profile.countryId == ''
+          && profile.cityId == '' && profile.schoolId == '' && profile.classId == '' && profile.groupIds == [])
+          || (profile.optIn == true && verified() && exists(accountPath(uid))
+            && get(accountPath(uid)).data.rankingEnabled == true
+            && profile.alias == get(accountPath(uid)).data.displayName
+            && profile.countryId == (get(accountPath(uid)).data.membership.countryId == null ? '' : get(accountPath(uid)).data.membership.countryId)
+            && profile.cityId == (get(accountPath(uid)).data.membership.cityId == null ? '' : get(accountPath(uid)).data.membership.cityId)
+            && profile.schoolId == (get(accountPath(uid)).data.membership.schoolId == null ? '' : get(accountPath(uid)).data.membership.schoolId)
+            && profile.classId == (get(accountPath(uid)).data.membership.classId == null ? '' : get(accountPath(uid)).data.membership.classId)
+            && profile.groupIds == get(accountPath(uid)).data.membership.groupIds));
+    }
+    match /onlineResults/{id} {
+      allow get: if signed() && request.auth.uid in get(matchPath(id)).data.participants;
+      allow list,delete: if signed() && request.auth.uid in resource.data.participants;
+      function terminal(d,m) {
+        let elapsed = request.time.toMillis() - m.lastAt.toMillis();
+        let white = m.moves.size() % 2 == 0;
+        let remaining = white ? m.whiteMs : m.blackMs;
+        return (d.reason == 'agreedDraw' && m.get('drawAccepted',false) && d.outcome == 'draw')
+          || (d.reason == 'resign' && m.get('resignedBy','') != '' && !m.get('drawAccepted',false)
+            && d.outcome == (m.resignedBy == m.participants[0] ? 'black' : 'white'))
+          || (d.reason == 'timeout' && !m.get('drawAccepted',false) && m.get('resignedBy','') == '' && remaining <= elapsed
+            && (m.get('turnLimitSeconds',0) == 0 || remaining <= m.turnLimitSeconds * 1000)
+            && d.outcome == (white ? 'black' : 'white'))
+          || (d.reason == 'inactivity' && !m.get('drawAccepted',false) && m.get('resignedBy','') == ''
+            && m.get('turnLimitSeconds',0) == 180 && remaining > 180000 && elapsed >= 180000
+            && d.outcome == (white ? 'black' : 'white'))
+          || (d.reason == 'limit' && m.moves.size() == 600 && d.outcome == 'draw')
+          || (d.reason == 'mate' && m.moves.size() >= 4 && d.outcome in ['white','black'])
+          || (d.reason == 'boardDraw' && d.outcome == 'draw');
+      }
+      allow create: if signed() && request.auth.uid in get(matchPath(id)).data.participants
+        && request.resource.data.keys().hasOnly(['participants','ply','lastAt','outcome','reason','confirmedBy','profiles','endedAt'])
+        && request.resource.data.participants == get(matchPath(id)).data.participants
+        && request.resource.data.ply == get(matchPath(id)).data.moves.size()
+        && request.resource.data.lastAt == get(matchPath(id)).data.lastAt
+        && request.resource.data.confirmedBy == [request.auth.uid]
+        && request.resource.data.profiles.keys().hasOnly([request.auth.uid])
+        && validResultProfile(request.resource.data.profiles[request.auth.uid],request.auth.uid)
+        && request.resource.data.endedAt == request.time
+        && terminal(request.resource.data,get(matchPath(id)).data);
+      allow update: if signed() && request.auth.uid in resource.data.participants
+        && resource.data.confirmedBy.size() == 1 && !(request.auth.uid in resource.data.confirmedBy)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['confirmedBy','profiles'])
+        && request.resource.data.confirmedBy == resource.data.confirmedBy.concat([request.auth.uid])
+        && request.resource.data.profiles.diff(resource.data.profiles).affectedKeys().hasOnly([request.auth.uid])
+        && validResultProfile(request.resource.data.profiles[request.auth.uid],request.auth.uid)
+        && resource.data.ply == get(matchPath(id)).data.moves.size()
+        && resource.data.lastAt == get(matchPath(id)).data.lastAt;
+    }
+    function validPeriod(period,ended) {
+      let local = ended + duration.value(3,'h');
+      return period == 'all'
+        || period == 'w' + string(int((ended.toMillis() + 3 * 86400000 + 10800000) / 604800000))
+        || period == 'm' + string(local.year() * 100 + local.month());
+    }
+    function resultCommunity(d,profile) {
+      return (d.scope == 'country' && d.communityId == profile.countryId)
+        || (d.scope == 'city' && d.communityId == profile.cityId)
+        || (d.scope == 'school' && d.communityId == profile.schoolId)
+        || (d.scope == 'classroom' && d.communityId == profile.classId)
+        || (d.scope == 'group' && d.communityId in profile.groupIds);
+    }
+    match /scoreClaims/{id} {
+      allow get: if signed() && (id.matches('.*_' + request.auth.uid + '_[a-f0-9]{40}$') || resource.data.uid == request.auth.uid);
+      allow list: if signed() && resource.data.uid == request.auth.uid;
+      allow delete: if signed() && resource.data.uid == request.auth.uid && !existsAfter(cardPath(resource.data.cardId));
+      function resultConfirmed(result) {
+        return (result.confirmedBy.size() == 2 && result.confirmedBy.hasAll(result.participants))
+          || (request.auth.uid in result.confirmedBy
+            && (result.reason in ['timeout','inactivity','resign','agreedDraw','limit']
+              || request.time >= result.endedAt + duration.value(180,'s')));
+      }
+      function validClaim() {
+        let d = request.resource.data;
+        let result = get(resultPath(d.matchId)).data;
+        let profile = result.profiles[request.auth.uid];
+        let white = result.participants[0] == request.auth.uid;
+        let points = result.outcome == 'draw' ? 1 : result.outcome == (white ? 'white' : 'black') ? 3 : 0;
+        return d.keys().hasOnly(['uid','cardId','matchId','period','scope','communityId','alias','points','win','draw','loss','awardedAt'])
+          && d.uid == request.auth.uid && verified() && get(accountPath(d.uid)).data.rankingEnabled == true
+          && resultConfirmed(result)
+          && profile.optIn == true && result.ply >= 4
+          && result.ply == get(matchPath(d.matchId)).data.moves.size()
+          && result.lastAt == get(matchPath(d.matchId)).data.lastAt
+          && d.alias == profile.alias && d.communityId != '' && textId(d.communityId)
+          && resultCommunity(d,profile) && validPeriod(d.period,result.endedAt)
+          && (!(d.scope in ['classroom','group']) || exists(memberPath(d.scope,d.communityId,request.auth.uid)))
+          && d.cardId == d.period + '_' + d.scope + '_' + d.communityId + '_' + d.uid
+          && id == d.cardId + '_' + d.matchId
+          && d.points == points && d.win == (points == 3 ? 1 : 0)
+          && d.draw == (points == 1 ? 1 : 0) && d.loss == (points == 0 ? 1 : 0)
+          && d.awardedAt == request.time && getAfter(cardPath(d.cardId)).data.lastClaim == id;
+      }
+      allow create: if signed() && validClaim();
+      allow update: if false;
+    }
+    match /communityScores/{id} {
+      allow get: if signed() && (id.matches('.*_' + request.auth.uid + '$') || resource.data.published == true);
+      allow list: if signed() && (resource.data.published == true || resource.data.uid == request.auth.uid);
+      allow delete: if signed() && resource.data.uid == request.auth.uid;
+      function validScore() {
+        let d = request.resource.data;
+        let claim = getAfter(claimPath(d.lastClaim)).data;
+        return d.keys().hasOnly(['uid','period','scope','communityId','alias','published','points','games','wins','draws','losses','lastClaim','updatedAt'])
+          && d.uid == request.auth.uid && d.published == true && d.updatedAt == request.time
+          && !exists(claimPath(d.lastClaim)) && claim.cardId == id && claim.uid == d.uid
+          && claim.awardedAt == request.time && d.alias == claim.alias
+          && d.period == claim.period && d.scope == claim.scope && d.communityId == claim.communityId
+          && d.points is int && d.games is int && d.wins is int && d.draws is int && d.losses is int;
+      }
+      allow create: if signed() && validScore()
+        && request.resource.data.points == getAfter(claimPath(request.resource.data.lastClaim)).data.points
+        && request.resource.data.games == 1
+        && request.resource.data.wins == getAfter(claimPath(request.resource.data.lastClaim)).data.win
+        && request.resource.data.draws == getAfter(claimPath(request.resource.data.lastClaim)).data.draw
+        && request.resource.data.losses == getAfter(claimPath(request.resource.data.lastClaim)).data.loss;
+      allow update: if signed() && resource.data.uid == request.auth.uid && validScore()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['alias','points','games','wins','draws','losses','lastClaim','updatedAt'])
+        && request.resource.data.points == resource.data.points + getAfter(claimPath(request.resource.data.lastClaim)).data.points
+        && request.resource.data.games == resource.data.games + 1
+        && request.resource.data.wins == resource.data.wins + getAfter(claimPath(request.resource.data.lastClaim)).data.win
+        && request.resource.data.draws == resource.data.draws + getAfter(claimPath(request.resource.data.lastClaim)).data.draw
+        && request.resource.data.losses == resource.data.losses + getAfter(claimPath(request.resource.data.lastClaim)).data.loss;
+    }
+    function inviteKeys(d) {
+      return d.keys().hasOnly(['creator','guest','matchId','minutes','increment','turnLimitSeconds','createdAt','expiresAt','opponent','rematchOf'])
+        && d.get('turnLimitSeconds',0) is int && d.get('turnLimitSeconds',0) in [0,180]
+        && d.minutes is int && d.minutes >= 1 && d.minutes <= 120
+        && d.increment is int && d.increment >= 0 && d.increment <= 60;
+    }
+    match /onlineInvites/{id} {
+      allow get: if signed() && (resource.data.creator == request.auth.uid
+        || resource.data.guest == request.auth.uid
+        || (resource.data.guest == '' && resource.data.expiresAt > request.time
+          && (resource.data.get('opponent','') == '' || resource.data.opponent == request.auth.uid)));
+      allow list: if signed() && (resource.data.creator == request.auth.uid || resource.data.guest == request.auth.uid
+        || resource.data.get('opponent','') == request.auth.uid);
+      allow create: if signed() && id.matches('^[a-f0-9]{40}$')
+        && inviteKeys(request.resource.data) && request.resource.data.creator == request.auth.uid
+        && request.resource.data.guest == '' && request.resource.data.matchId == ''
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.expiresAt < request.time + duration.value(25,'h')
+        && validRematchInvite();
+      function validRematchInvite() {
+        let d = request.resource.data;
+        let parentId = d.get('rematchOf','');
+        return (parentId == '' && d.get('opponent','') == '')
+          || (parentId.matches('^[a-f0-9]{40}$')
+            && request.auth.uid in get(matchPath(parentId)).data.participants
+            && d.opponent != request.auth.uid
+            && d.opponent in get(matchPath(parentId)).data.participants
+            && d.minutes == get(matchPath(parentId)).data.minutes
+            && d.increment == get(matchPath(parentId)).data.increment
+            && getAfter(matchPath(parentId)).data.rematchInvite == id);
+      }
+      allow update: if signed() && resource.data.creator != request.auth.uid
+        && resource.data.guest == '' && resource.data.expiresAt > request.time
+        && (resource.data.get('opponent','') == '' || resource.data.opponent == request.auth.uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guest','matchId'])
+        && request.resource.data.guest == request.auth.uid && request.resource.data.matchId == id
+        && getAfter(matchPath(id)).data.participants == [resource.data.creator,request.auth.uid];
+      allow delete: if signed() && (resource.data.creator == request.auth.uid || resource.data.guest == request.auth.uid
+        || resource.data.get('opponent','') == request.auth.uid);
+    }
+    match /onlineMatches/{id} {
+      match /presence/{uid} {
+        allow read,delete: if signed() && request.auth.uid in get(matchPath(id)).data.participants;
+        allow create,update: if signed() && uid == request.auth.uid
+          && request.auth.uid in get(matchPath(id)).data.participants
+          && request.resource.data.keys().hasOnly(['seenAt']) && request.resource.data.seenAt == request.time;
+      }
+      allow read, delete: if signed() && request.auth.uid in resource.data.participants;
+      allow create: if signed()
+        && request.resource.data.keys().hasOnly(['participants','minutes','increment','turnLimitSeconds','moves','createdAt','lastAt','whiteMs','blackMs'])
+        && get(invitePath(id)).data.guest == ''
+        && get(invitePath(id)).data.creator != request.auth.uid
+        && (get(invitePath(id)).data.get('opponent','') == '' || get(invitePath(id)).data.opponent == request.auth.uid)
+        && get(invitePath(id)).data.expiresAt > request.time
+        && getAfter(invitePath(id)).data.guest == request.auth.uid
+        && getAfter(invitePath(id)).data.matchId == id
+        && request.resource.data.participants == [get(invitePath(id)).data.creator,request.auth.uid]
+        && request.resource.data.minutes == get(invitePath(id)).data.minutes
+        && request.resource.data.increment == get(invitePath(id)).data.increment
+        && request.resource.data.get('turnLimitSeconds',0) == get(invitePath(id)).data.get('turnLimitSeconds',0)
+        && request.resource.data.moves == [] && request.resource.data.createdAt == request.time
+        && request.resource.data.lastAt == request.time
+        && request.resource.data.whiteMs == request.resource.data.minutes * 60000
+        && request.resource.data.blackMs == request.resource.data.minutes * 60000;
+      function appendMove() {
+        let old = resource.data;
+        let next = request.resource.data;
+        let ply = old.moves.size();
+        let white = ply % 2 == 0;
+        let elapsed = request.time.toMillis() - old.lastAt.toMillis();
+        let priorClock = white ? old.whiteMs : old.blackMs;
+        let nextClock = white ? next.whiteMs : next.blackMs;
+        return ply < 600 && !old.get('drawAccepted',false) && old.get('resignedBy','') == ''
+          && old.participants[ply % 2] == request.auth.uid
+          && (!exists(resultPath(id)) || get(resultPath(id)).data.confirmedBy.size() < 2)
+          && next.diff(old).affectedKeys().hasOnly(white ? ['moves','lastAt','whiteMs','drawBy'] : ['moves','lastAt','blackMs','drawBy'])
+          && next.get('drawBy','') == ''
+          && next.moves is list && next.moves.size() == ply + 1
+          && next.moves == old.moves.concat([next.moves[ply]])
+          && next.moves[ply] is string && next.moves[ply].matches('^[a-h][1-8][a-h][1-8][qrbn]?$')
+          && next.lastAt == request.time && nextClock is int && nextClock > 0
+          && priorClock > elapsed
+          && (old.get('turnLimitSeconds',0) == 0 || elapsed < old.turnLimitSeconds * 1000)
+          && nextClock <= priorClock - elapsed + old.increment * 1000 + 1500
+          && nextClock >= priorClock - elapsed + old.increment * 1000 - 1500;
+      }
+      function actionBase() {
+        let old = resource.data;
+        let next = request.resource.data;
+        return request.auth.uid in old.participants
+          && next.actionRevision is int
+          && next.actionRevision == old.get('actionRevision',0) + 1
+          && next.actionRevision < 9000 && next.actionAt == request.time;
+      }
+      function running() {
+        let old = resource.data;
+        let remaining = old.moves.size() % 2 == 0 ? old.whiteMs : old.blackMs;
+        return !old.get('drawAccepted',false) && old.get('resignedBy','') == '' && old.moves.size() < 600
+          && remaining > request.time.toMillis() - old.lastAt.toMillis()
+          && (old.get('turnLimitSeconds',0) == 0 || request.time.toMillis() - old.lastAt.toMillis() < old.turnLimitSeconds * 1000);
+      }
+      function resignGame() {
+        let old = resource.data;
+        let next = request.resource.data;
+        let elapsed = request.time.toMillis() - old.lastAt.toMillis();
+        let white = old.moves.size() % 2 == 0;
+        let remaining = white ? next.whiteMs : next.blackMs;
+        let prior = white ? old.whiteMs : old.blackMs;
+        return running()
+          && next.diff(old).affectedKeys().hasOnly(['resignedBy','whiteMs','blackMs','actionRevision','actionAt'])
+          && next.resignedBy == request.auth.uid
+          && next.whiteMs is int && next.blackMs is int
+          && remaining >= 0 && remaining >= prior - elapsed - 1500 && remaining <= prior + 1500
+          && (white ? next.blackMs == old.blackMs : next.whiteMs == old.whiteMs);
+      }
+      function offerDraw() {
+        let old = resource.data;
+        let next = request.resource.data;
+        return running() && old.get('drawBy','') == ''
+          && next.diff(old).affectedKeys().hasOnly(['drawBy','drawPly','actionRevision','actionAt'])
+          && next.drawBy == request.auth.uid && next.drawPly == old.moves.size();
+      }
+      function replyDraw() {
+        let old = resource.data;
+        let next = request.resource.data;
+        let elapsed = request.time.toMillis() - old.lastAt.toMillis();
+        let white = old.moves.size() % 2 == 0;
+        let remaining = white ? next.whiteMs : next.blackMs;
+        let prior = white ? old.whiteMs : old.blackMs;
+        return running() && old.get('drawBy','') != '' && old.drawBy != request.auth.uid
+          && old.drawPly == old.moves.size()
+          && ((next.diff(old).affectedKeys().hasOnly(['drawBy','actionRevision','actionAt']) && next.drawBy == '')
+            || (next.diff(old).affectedKeys().hasOnly(['drawAccepted','whiteMs','blackMs','actionRevision','actionAt'])
+              && next.drawAccepted == true && next.whiteMs is int && next.blackMs is int
+              && remaining > 0 && remaining >= prior - elapsed - 1500 && remaining <= prior - elapsed + 1500
+              && (white ? next.blackMs == old.blackMs : next.whiteMs == old.whiteMs)));
+      }
+      function message() {
+        let old = resource.data;
+        let next = request.resource.data;
+        let prior = old.get('quickMessages',[]);
+        let last = next.quickMessages[prior.size()];
+        return next.diff(old).affectedKeys().hasOnly(['quickMessages','actionRevision','actionAt'])
+          && prior.size() < 12 && next.quickMessages is list
+          && next.quickMessages.size() == prior.size() + 1
+          && next.quickMessages == prior.concat([last])
+          && last.keys().hasOnly(['sender','code','at']) && last.sender == request.auth.uid
+          && last.code in ['congratulations','wellPlayed','goodGame','thanks']
+          && last.at is timestamp && last.at <= request.time + duration.value(10,'s')
+          && last.at >= request.time - duration.value(10,'s');
+      }
+      function rematch() {
+        let old = resource.data;
+        let next = request.resource.data;
+        return (next.diff(old).affectedKeys().hasOnly(['rematchBy','rematchInvite','actionRevision','actionAt'])
+            && old.get('rematchInvite','') == '' && next.rematchBy == request.auth.uid
+            && next.rematchInvite.matches('^[a-f0-9]{40}$')
+            && getAfter(invitePath(next.rematchInvite)).data.creator == request.auth.uid
+            && getAfter(invitePath(next.rematchInvite)).data.rematchOf == id)
+          || (next.diff(old).affectedKeys().hasOnly(['rematchMatch','actionRevision','actionAt'])
+            && old.get('rematchMatch','') == '' && old.rematchBy != request.auth.uid
+            && next.rematchMatch == old.rematchInvite
+            && getAfter(invitePath(old.rematchInvite)).data.guest == request.auth.uid
+            && getAfter(invitePath(old.rematchInvite)).data.matchId == next.rematchMatch);
+      }
+      // Ownership, turn, history and clock bounds are enforced here. Full chess
+      // legality is independently replayed on clients. No rating writes exist.
+      allow update: if signed() && (appendMove() || (actionBase()
+        && (offerDraw() || replyDraw() || resignGame() || message() || rematch())));
+    }
+    match /onlineQueues/{bucket} {
+      allow get: if signed();
+      allow list, delete: if signed() && resource.data.creator == request.auth.uid;
+      function validSlot() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['creator','invite','expiresAt'])
+          && d.creator == request.auth.uid && d.invite.matches('^[a-f0-9]{40}$')
+          && d.expiresAt > request.time && d.expiresAt < request.time + duration.value(6,'m')
+          && getAfter(invitePath(d.invite)).data.creator == request.auth.uid
+          && bucket == string(getAfter(invitePath(d.invite)).data.minutes) + '_' + string(getAfter(invitePath(d.invite)).data.increment)
+            + (getAfter(invitePath(d.invite)).data.get('turnLimitSeconds',0) == 180 ? '_180' : '');
+      }
+      allow create: if signed() && validSlot();
+      allow update: if signed() && (
+        (validSlot() && (resource.data.creator == '' || resource.data.creator == request.auth.uid || resource.data.expiresAt < request.time))
+        || (request.resource.data.keys().hasOnly(['creator','invite','expiresAt'])
+          && request.resource.data.creator == '' && request.resource.data.invite == ''
+          && (resource.data.creator == request.auth.uid
+            || getAfter(invitePath(resource.data.invite)).data.guest == request.auth.uid)));
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

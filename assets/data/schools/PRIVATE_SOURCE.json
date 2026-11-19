@@ -1,0 +1,1335 @@
+{
+  "upstream": "https://ookgm.meb.gov.tr/kurumlar.php",
+  "retrievedAt": "2026-10-04T19:38:16.528Z",
+  "category": "okul",
+  "provinces": 81,
+  "schoolCount": 12619,
+  "sourceRecordCount": 12620,
+  "duplicatesRemoved": 1,
+  "identity": "Source does not expose a MEB institution code. App IDs hash province/district/name/type/address to distinguish campuses; addresses are not exported and institutionCode remains null.",
+  "permission": "MEB reuse permission not established; legal review deferred by user.",
+  "pages": [
+    {
+      "cityId": "tr-01",
+      "code": "01",
+      "total": 244,
+      "count": 244,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ADANA&tur=okul&tur2=0",
+          "sha256": "1c01f88bdc07fe6889f4a6cd85e805f4d4ebf5af9db67a4fcf2fa91d4588243e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ADANA&tur=okul&tur2=0",
+      "sha256": "1c01f88bdc07fe6889f4a6cd85e805f4d4ebf5af9db67a4fcf2fa91d4588243e"
+    },
+    {
+      "cityId": "tr-02",
+      "code": "02",
+      "total": 50,
+      "count": 50,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ADIYAMAN&tur=okul&tur2=0",
+          "sha256": "feea1d65d6c14c600c9f8fbf3e78f8bbb5cb8b324445854a07bce66185c7db12"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ADIYAMAN&tur=okul&tur2=0",
+      "sha256": "feea1d65d6c14c600c9f8fbf3e78f8bbb5cb8b324445854a07bce66185c7db12"
+    },
+    {
+      "cityId": "tr-03",
+      "code": "03",
+      "total": 58,
+      "count": 58,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AFYONKARAH%C4%B0SAR&tur=okul&tur2=0",
+          "sha256": "02fdd7e6791ce3b5d9c6e1edacb811f7892c956cd0185977ecbe6aa8e56a5e15"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AFYONKARAH%C4%B0SAR&tur=okul&tur2=0",
+      "sha256": "02fdd7e6791ce3b5d9c6e1edacb811f7892c956cd0185977ecbe6aa8e56a5e15"
+    },
+    {
+      "cityId": "tr-04",
+      "code": "04",
+      "total": 23,
+      "count": 23,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=A%C4%9ERI&tur=okul&tur2=0",
+          "sha256": "1686880d376d0e7662b42dee6322575670c49e344c7c30b3f4c019d5d66e26ee"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=A%C4%9ERI&tur=okul&tur2=0",
+      "sha256": "1686880d376d0e7662b42dee6322575670c49e344c7c30b3f4c019d5d66e26ee"
+    },
+    {
+      "cityId": "tr-05",
+      "code": "05",
+      "total": 29,
+      "count": 29,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AMASYA&tur=okul&tur2=0",
+          "sha256": "2ff6e39206045bcdf1e586726adde3cf6b3829923a208e00c2c4d793c17454cc"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AMASYA&tur=okul&tur2=0",
+      "sha256": "2ff6e39206045bcdf1e586726adde3cf6b3829923a208e00c2c4d793c17454cc"
+    },
+    {
+      "cityId": "ankara",
+      "code": "06",
+      "total": 1483,
+      "count": 1483,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ANKARA&tur=okul&tur2=0",
+          "sha256": "cf6343ac584b4f2535af17199156f31a53a8692e1a8f8c409edf50be1c2f53da"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=ANKARA&tur2=0&program=",
+          "sha256": "4dc67cf044631a39a1f6e33537a86f95c0c58d5d708c955fe36e078bf0ca65dc"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=3&tur=okul&il=ANKARA&tur2=0&program=",
+          "sha256": "dc57fa3ba28b517a65c7d4db095d62e6fb4d48120547e181c7941669be69a102"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=4&tur=okul&il=ANKARA&tur2=0&program=",
+          "sha256": "c90d02efdbf6d21264dd47e2f9bf2be812ab24ecdb9301a3f3d14001425b9cb8"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=5&tur=okul&il=ANKARA&tur2=0&program=",
+          "sha256": "c9ccd5a1da16ecf3dd9c5d895ab0bd5b4ba796732e525fee6a34b220241ee8ac"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=6&tur=okul&il=ANKARA&tur2=0&program=",
+          "sha256": "d552b7eb614da65b881392ee52f96c308c4618161bcab43b4d915346cb467dd0"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ANKARA&tur=okul&tur2=0",
+      "sha256": "cf6343ac584b4f2535af17199156f31a53a8692e1a8f8c409edf50be1c2f53da"
+    },
+    {
+      "cityId": "tr-07",
+      "code": "07",
+      "total": 455,
+      "count": 455,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ANTALYA&tur=okul&tur2=0",
+          "sha256": "3e6657e654c2329095bce576f062c8f6a8676f51842e9932eaecda08f9c3767c"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=ANTALYA&tur2=0&program=",
+          "sha256": "23595886e8c587a7bc445da5b183fad3535d201987dcb37b95f0cd13df1c5c53"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ANTALYA&tur=okul&tur2=0",
+      "sha256": "3e6657e654c2329095bce576f062c8f6a8676f51842e9932eaecda08f9c3767c"
+    },
+    {
+      "cityId": "tr-08",
+      "code": "08",
+      "total": 4,
+      "count": 4,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ARTV%C4%B0N&tur=okul&tur2=0",
+          "sha256": "4e3aaa97e284d28a52a4634141f221f9dd0dce68075aaa6d6cad617dda02f079"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ARTV%C4%B0N&tur=okul&tur2=0",
+      "sha256": "4e3aaa97e284d28a52a4634141f221f9dd0dce68075aaa6d6cad617dda02f079"
+    },
+    {
+      "cityId": "tr-09",
+      "code": "09",
+      "total": 143,
+      "count": 143,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AYDIN&tur=okul&tur2=0",
+          "sha256": "513e5da7d481feb2967afc15bdb65f32c50b51b94d8c68152d06199e18a1a778"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AYDIN&tur=okul&tur2=0",
+      "sha256": "513e5da7d481feb2967afc15bdb65f32c50b51b94d8c68152d06199e18a1a778"
+    },
+    {
+      "cityId": "tr-10",
+      "code": "10",
+      "total": 202,
+      "count": 202,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BALIKES%C4%B0R&tur=okul&tur2=0",
+          "sha256": "dcf1de986fbafd5077592496a66bcf1442e028530cca21a0874fdcfc9ce71f59"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BALIKES%C4%B0R&tur=okul&tur2=0",
+      "sha256": "dcf1de986fbafd5077592496a66bcf1442e028530cca21a0874fdcfc9ce71f59"
+    },
+    {
+      "cityId": "tr-11",
+      "code": "11",
+      "total": 23,
+      "count": 23,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0LEC%C4%B0K&tur=okul&tur2=0",
+          "sha256": "a6a2785f1945a8350432b1047805aea1465f438b92511fed33518968e039580b"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0LEC%C4%B0K&tur=okul&tur2=0",
+      "sha256": "a6a2785f1945a8350432b1047805aea1465f438b92511fed33518968e039580b"
+    },
+    {
+      "cityId": "tr-12",
+      "code": "12",
+      "total": 17,
+      "count": 17,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0NG%C3%96L&tur=okul&tur2=0",
+          "sha256": "cab697a7025fac41358e209d80ed9b2b0f08c953647adc20b0231d105cf630b1"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0NG%C3%96L&tur=okul&tur2=0",
+      "sha256": "cab697a7025fac41358e209d80ed9b2b0f08c953647adc20b0231d105cf630b1"
+    },
+    {
+      "cityId": "tr-13",
+      "code": "13",
+      "total": 12,
+      "count": 12,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0TL%C4%B0S&tur=okul&tur2=0",
+          "sha256": "092f5b62b62ca520f4f7bbd8c30cd5fbbe0acb1846b84b6e2cf023eca8ab9e41"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=B%C4%B0TL%C4%B0S&tur=okul&tur2=0",
+      "sha256": "092f5b62b62ca520f4f7bbd8c30cd5fbbe0acb1846b84b6e2cf023eca8ab9e41"
+    },
+    {
+      "cityId": "tr-14",
+      "code": "14",
+      "total": 31,
+      "count": 31,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BOLU&tur=okul&tur2=0",
+          "sha256": "b465046ad9b175cd62e530c3305534203f8c4b83e8f868214aebdc40ab805210"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BOLU&tur=okul&tur2=0",
+      "sha256": "b465046ad9b175cd62e530c3305534203f8c4b83e8f868214aebdc40ab805210"
+    },
+    {
+      "cityId": "tr-15",
+      "code": "15",
+      "total": 20,
+      "count": 20,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BURDUR&tur=okul&tur2=0",
+          "sha256": "eb8068e35ececf6ffa50891280a0c73c5cd8779b4963b020577961af34017111"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BURDUR&tur=okul&tur2=0",
+      "sha256": "eb8068e35ececf6ffa50891280a0c73c5cd8779b4963b020577961af34017111"
+    },
+    {
+      "cityId": "tr-16",
+      "code": "16",
+      "total": 620,
+      "count": 620,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BURSA&tur=okul&tur2=0",
+          "sha256": "11068801931869283dfdfdb9983c93cdc665cc30bdb508e9a6c8c8a5a59d6615"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=BURSA&tur2=0&program=",
+          "sha256": "4610dd5c4fad7456d578fc904777ad9933b3bb74dcb53136e897c251adeb8e6f"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=3&tur=okul&il=BURSA&tur2=0&program=",
+          "sha256": "39d59c9a7045eb6ff59f0aa5330ecdb7a2c1774af2d2c2532e83b813fef4c1dc"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BURSA&tur=okul&tur2=0",
+      "sha256": "11068801931869283dfdfdb9983c93cdc665cc30bdb508e9a6c8c8a5a59d6615"
+    },
+    {
+      "cityId": "tr-17",
+      "code": "17",
+      "total": 70,
+      "count": 70,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ANAKKALE&tur=okul&tur2=0",
+          "sha256": "b1ea4a00acdc3e0192ecbc2ea960512c17c631f395c75206e4a41184d081c269"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ANAKKALE&tur=okul&tur2=0",
+      "sha256": "b1ea4a00acdc3e0192ecbc2ea960512c17c631f395c75206e4a41184d081c269"
+    },
+    {
+      "cityId": "tr-18",
+      "code": "18",
+      "total": 11,
+      "count": 11,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ANKIRI&tur=okul&tur2=0",
+          "sha256": "79cc68072c687776e974a5f335024b3abc0e63390e6718bd971896f7765b31d9"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ANKIRI&tur=okul&tur2=0",
+      "sha256": "79cc68072c687776e974a5f335024b3abc0e63390e6718bd971896f7765b31d9"
+    },
+    {
+      "cityId": "tr-19",
+      "code": "19",
+      "total": 47,
+      "count": 47,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ORUM&tur=okul&tur2=0",
+          "sha256": "6987ca4613de67c6b8a463151b64702bad9327de7074bd503d5af77c12ae02ac"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C3%87ORUM&tur=okul&tur2=0",
+      "sha256": "6987ca4613de67c6b8a463151b64702bad9327de7074bd503d5af77c12ae02ac"
+    },
+    {
+      "cityId": "tr-20",
+      "code": "20",
+      "total": 115,
+      "count": 115,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=DEN%C4%B0ZL%C4%B0&tur=okul&tur2=0",
+          "sha256": "1783bdd2020ca4ae05c3ff88d21224859a433a1bd6aa4fb0db43c09ee6ba9b2e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=DEN%C4%B0ZL%C4%B0&tur=okul&tur2=0",
+      "sha256": "1783bdd2020ca4ae05c3ff88d21224859a433a1bd6aa4fb0db43c09ee6ba9b2e"
+    },
+    {
+      "cityId": "tr-21",
+      "code": "21",
+      "total": 147,
+      "count": 147,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=D%C4%B0YARBAKIR&tur=okul&tur2=0",
+          "sha256": "84d9c8e210a8f46a12cdbc7a58cf2f916deec67f0e22988d2dbc46d21a402407"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=D%C4%B0YARBAKIR&tur=okul&tur2=0",
+      "sha256": "84d9c8e210a8f46a12cdbc7a58cf2f916deec67f0e22988d2dbc46d21a402407"
+    },
+    {
+      "cityId": "tr-22",
+      "code": "22",
+      "total": 48,
+      "count": 48,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ED%C4%B0RNE&tur=okul&tur2=0",
+          "sha256": "4d03af0d9734e008382f8cf2a6c09c7388d9a0ca1b0594a05122bdad27d44988"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ED%C4%B0RNE&tur=okul&tur2=0",
+      "sha256": "4d03af0d9734e008382f8cf2a6c09c7388d9a0ca1b0594a05122bdad27d44988"
+    },
+    {
+      "cityId": "tr-23",
+      "code": "23",
+      "total": 82,
+      "count": 82,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ELAZI%C4%9E&tur=okul&tur2=0",
+          "sha256": "72050a02315133ce8ad2723bf5d7b7edc56d271dd3e38b326d05302cf907d3ca"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ELAZI%C4%9E&tur=okul&tur2=0",
+      "sha256": "72050a02315133ce8ad2723bf5d7b7edc56d271dd3e38b326d05302cf907d3ca"
+    },
+    {
+      "cityId": "tr-24",
+      "code": "24",
+      "total": 21,
+      "count": 21,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ERZ%C4%B0NCAN&tur=okul&tur2=0",
+          "sha256": "32cf20ffc51bf4002a54966a1256b30fdb134402cbe2853c80c0247113dbbfb1"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ERZ%C4%B0NCAN&tur=okul&tur2=0",
+      "sha256": "32cf20ffc51bf4002a54966a1256b30fdb134402cbe2853c80c0247113dbbfb1"
+    },
+    {
+      "cityId": "tr-25",
+      "code": "25",
+      "total": 76,
+      "count": 76,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ERZURUM&tur=okul&tur2=0",
+          "sha256": "449af09e345282383e8bc9135f61cc8be9bc3e3735a95d05bb16eed6ebb7e712"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ERZURUM&tur=okul&tur2=0",
+      "sha256": "449af09e345282383e8bc9135f61cc8be9bc3e3735a95d05bb16eed6ebb7e712"
+    },
+    {
+      "cityId": "tr-26",
+      "code": "26",
+      "total": 107,
+      "count": 107,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ESK%C4%B0%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+          "sha256": "6af7b0bc8323b8d4d05d236fe472779cc9146737814ae090cd81d0acb34c3cc2"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ESK%C4%B0%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+      "sha256": "6af7b0bc8323b8d4d05d236fe472779cc9146737814ae090cd81d0acb34c3cc2"
+    },
+    {
+      "cityId": "tr-27",
+      "code": "27",
+      "total": 189,
+      "count": 189,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=GAZ%C4%B0ANTEP&tur=okul&tur2=0",
+          "sha256": "1a93a22abd0e010d3a829ac16ba17892d44ed2de7f866c2b79a5681f4d113c63"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=GAZ%C4%B0ANTEP&tur=okul&tur2=0",
+      "sha256": "1a93a22abd0e010d3a829ac16ba17892d44ed2de7f866c2b79a5681f4d113c63"
+    },
+    {
+      "cityId": "giresun",
+      "code": "28",
+      "total": 19,
+      "count": 19,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=G%C4%B0RESUN&tur=okul&tur2=0",
+          "sha256": "8e356fefe0419806d3a1bbc77d100217d81986162778c5a2d018ba17f60434b3"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=G%C4%B0RESUN&tur=okul&tur2=0",
+      "sha256": "8e356fefe0419806d3a1bbc77d100217d81986162778c5a2d018ba17f60434b3"
+    },
+    {
+      "cityId": "tr-29",
+      "code": "29",
+      "total": 2,
+      "count": 2,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=G%C3%9CM%C3%9C%C5%9EHANE&tur=okul&tur2=0",
+          "sha256": "c4e84afb984b754ab0f570b3652583c73c0c1c70dd15f649afb7ad41b160501f"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=G%C3%9CM%C3%9C%C5%9EHANE&tur=okul&tur2=0",
+      "sha256": "c4e84afb984b754ab0f570b3652583c73c0c1c70dd15f649afb7ad41b160501f"
+    },
+    {
+      "cityId": "tr-30",
+      "code": "30",
+      "total": 10,
+      "count": 10,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=HAKKAR%C4%B0&tur=okul&tur2=0",
+          "sha256": "80fc34bdfbf8abec76173c60345e9a9e6d46c277d7c9605a3b3b9667101719eb"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=HAKKAR%C4%B0&tur=okul&tur2=0",
+      "sha256": "80fc34bdfbf8abec76173c60345e9a9e6d46c277d7c9605a3b3b9667101719eb"
+    },
+    {
+      "cityId": "tr-31",
+      "code": "31",
+      "total": 196,
+      "count": 196,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=HATAY&tur=okul&tur2=0",
+          "sha256": "2249d86d0ec430e8b05544c21f9b989433dbfee22dedde2a96ab0a17fca170f7"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=HATAY&tur=okul&tur2=0",
+      "sha256": "2249d86d0ec430e8b05544c21f9b989433dbfee22dedde2a96ab0a17fca170f7"
+    },
+    {
+      "cityId": "tr-32",
+      "code": "32",
+      "total": 37,
+      "count": 37,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ISPARTA&tur=okul&tur2=0",
+          "sha256": "cfb6504097dd4730f58065d754c90b5702fd11d527aa1bd86110ccc4ba7cb834"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ISPARTA&tur=okul&tur2=0",
+      "sha256": "cfb6504097dd4730f58065d754c90b5702fd11d527aa1bd86110ccc4ba7cb834"
+    },
+    {
+      "cityId": "tr-33",
+      "code": "33",
+      "total": 315,
+      "count": 315,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MERS%C4%B0N&tur=okul&tur2=0",
+          "sha256": "5babeff8ad51de7ea68751f2f47449c5026b79f7dd99f8457d686e1f0948b915"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=MERS%C4%B0N&tur2=0&program=",
+          "sha256": "1df514e97343c68adab0ab5677c8914425887287d57481471ae381d142d49172"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MERS%C4%B0N&tur=okul&tur2=0",
+      "sha256": "5babeff8ad51de7ea68751f2f47449c5026b79f7dd99f8457d686e1f0948b915"
+    },
+    {
+      "cityId": "istanbul",
+      "code": "34",
+      "total": 3493,
+      "count": 3493,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C4%B0STANBUL&tur=okul&tur2=0",
+          "sha256": "158f13e72347f00e7ffd79344a006fdeaaed9c3e86a3dcfe4baa51e16976f0c5"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "d887d7a1ba94883d5f8c84fd592d112dbd70db9f9e63de6994ba31557411f58d"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=3&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "d383286a54f82416aa43c98095975b43e424e07dcf62cd1f846b19447a2a8442"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=4&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "f78d3139d4e898904983c62c0a4803bb7350e8d8d7802f92e862bf68e808c317"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=5&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "2366461c4d529ab8784b003ca52504d85bfa22834a3f626da78aa908a77ba659"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=6&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "9cb4ccd67af26d4d4414a32c1ca8113ca691e365601eaaa6cb071c3d85f6de73"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=7&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "3f63e34c8e329ec9eeb950431d69de5076a72ac72b32dbd89869cbde29367988"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=8&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "edbbb4251073d24fe8b24505cabd5ebfcf02516688f45d1b291861636fb2abd0"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=9&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "5ca51d9f5a3fd996e7b99b5d735cbe28de1dbaafb6362eaf6b7bef5d10d65c36"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=10&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "777d0ba1345cc08f16d631115999dc5d32a98d5ca543664a6303e3d7b11273a3"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=11&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "e0e7c83081865f923e42e7a4ce84f367a16a3fca92d96e9cdeb1e6172f193db5"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=12&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "57e07c4836a0293beddd564b641e7862d7d33e24839c6ad10c40345a03e26c42"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=13&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "2060f7d8452818e8176daec1f80dee5da98b38e10a2f17a3423a6badfec47856"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=14&tur=okul&il=%C4%B0STANBUL&tur2=0&program=",
+          "sha256": "b0cbdeacc9ca759c51498e9ab408f6065e67d2aee15d8a8b50a5b65c27e62a37"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C4%B0STANBUL&tur=okul&tur2=0",
+      "sha256": "158f13e72347f00e7ffd79344a006fdeaaed9c3e86a3dcfe4baa51e16976f0c5"
+    },
+    {
+      "cityId": "tr-35",
+      "code": "35",
+      "total": 921,
+      "count": 921,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C4%B0ZM%C4%B0R&tur=okul&tur2=0",
+          "sha256": "a854fbbce8c758d6cdbd5e81f394ea2b725c05fa192c61fdc19c544dcdea632b"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=%C4%B0ZM%C4%B0R&tur2=0&program=",
+          "sha256": "32f3d91cd9e7d64e7d7a7b2d4c7f78748a94384ac931fc62eec934a30f3101ac"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=3&tur=okul&il=%C4%B0ZM%C4%B0R&tur2=0&program=",
+          "sha256": "332a1cb83b92f2956672011803cd1f9e6923fcb111bc76654a029341797d251e"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=4&tur=okul&il=%C4%B0ZM%C4%B0R&tur2=0&program=",
+          "sha256": "19d5c8cfda3588dd690342f2a6d78bcfca8d24e19a20c026a8e993bf171c9aae"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C4%B0ZM%C4%B0R&tur=okul&tur2=0",
+      "sha256": "a854fbbce8c758d6cdbd5e81f394ea2b725c05fa192c61fdc19c544dcdea632b"
+    },
+    {
+      "cityId": "tr-36",
+      "code": "36",
+      "total": 20,
+      "count": 20,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARS&tur=okul&tur2=0",
+          "sha256": "ee0bbb8b0904f31e7a7a01c1881598ec68d10eae76d137b57d60da7c727b8d7d"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARS&tur=okul&tur2=0",
+      "sha256": "ee0bbb8b0904f31e7a7a01c1881598ec68d10eae76d137b57d60da7c727b8d7d"
+    },
+    {
+      "cityId": "tr-37",
+      "code": "37",
+      "total": 31,
+      "count": 31,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KASTAMONU&tur=okul&tur2=0",
+          "sha256": "6e76ca9952941099b046e9cd1be0611f2492bf5e08566cbde07a7245519c663c"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KASTAMONU&tur=okul&tur2=0",
+      "sha256": "6e76ca9952941099b046e9cd1be0611f2492bf5e08566cbde07a7245519c663c"
+    },
+    {
+      "cityId": "tr-38",
+      "code": "38",
+      "total": 154,
+      "count": 154,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KAYSER%C4%B0&tur=okul&tur2=0",
+          "sha256": "8549ad926f0ee98f20ce2822d22546611a185e722480eb374333f90d415c678d"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KAYSER%C4%B0&tur=okul&tur2=0",
+      "sha256": "8549ad926f0ee98f20ce2822d22546611a185e722480eb374333f90d415c678d"
+    },
+    {
+      "cityId": "tr-39",
+      "code": "39",
+      "total": 52,
+      "count": 52,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIRKLAREL%C4%B0&tur=okul&tur2=0",
+          "sha256": "3fb7f9dbc9f3ed8b81c5d0025e6f2f1188300ab2a4573f6680b3172df67f438d"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIRKLAREL%C4%B0&tur=okul&tur2=0",
+      "sha256": "3fb7f9dbc9f3ed8b81c5d0025e6f2f1188300ab2a4573f6680b3172df67f438d"
+    },
+    {
+      "cityId": "tr-40",
+      "code": "40",
+      "total": 22,
+      "count": 22,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIR%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+          "sha256": "420f8a41f64c8420ad5ee76f3dffafde33b0fff4326282b8689ec7864d1469ff"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIR%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+      "sha256": "420f8a41f64c8420ad5ee76f3dffafde33b0fff4326282b8689ec7864d1469ff"
+    },
+    {
+      "cityId": "tr-41",
+      "code": "41",
+      "total": 366,
+      "count": 366,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KOCAEL%C4%B0&tur=okul&tur2=0",
+          "sha256": "c54be135b1b44661fcd45f82ac20527d148d6659b2ed9218d51a0231c222838c"
+        },
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?sayfa=2&tur=okul&il=KOCAEL%C4%B0&tur2=0&program=",
+          "sha256": "e328780aec8473d0101de6511233d0fdc2ec9dc2532d39df4052be6cf245b938"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KOCAEL%C4%B0&tur=okul&tur2=0",
+      "sha256": "c54be135b1b44661fcd45f82ac20527d148d6659b2ed9218d51a0231c222838c"
+    },
+    {
+      "cityId": "tr-42",
+      "code": "42",
+      "total": 242,
+      "count": 242,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KONYA&tur=okul&tur2=0",
+          "sha256": "f199809daf3218c92b86eee5fade06d29172ea6a54e9f4d8263d5a5c751b876e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KONYA&tur=okul&tur2=0",
+      "sha256": "f199809daf3218c92b86eee5fade06d29172ea6a54e9f4d8263d5a5c751b876e"
+    },
+    {
+      "cityId": "tr-43",
+      "code": "43",
+      "total": 60,
+      "count": 60,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=K%C3%9CTAHYA&tur=okul&tur2=0",
+          "sha256": "269d86978ad6b5f454e7881343bdbe4b02e7c163e3dd36801bfeeae57d567ff9"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=K%C3%9CTAHYA&tur=okul&tur2=0",
+      "sha256": "269d86978ad6b5f454e7881343bdbe4b02e7c163e3dd36801bfeeae57d567ff9"
+    },
+    {
+      "cityId": "tr-44",
+      "code": "44",
+      "total": 116,
+      "count": 116,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MALATYA&tur=okul&tur2=0",
+          "sha256": "91978529b36bbb17b708766023c891348d549066bb42a30be04a576f14c53abd"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MALATYA&tur=okul&tur2=0",
+      "sha256": "91978529b36bbb17b708766023c891348d549066bb42a30be04a576f14c53abd"
+    },
+    {
+      "cityId": "tr-45",
+      "code": "45",
+      "total": 171,
+      "count": 171,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MAN%C4%B0SA&tur=okul&tur2=0",
+          "sha256": "cd24170646f800c2696bd32fd26a098896adf26fa7ef5b3d6d9a2a7a3bee3caa"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MAN%C4%B0SA&tur=okul&tur2=0",
+      "sha256": "cd24170646f800c2696bd32fd26a098896adf26fa7ef5b3d6d9a2a7a3bee3caa"
+    },
+    {
+      "cityId": "tr-46",
+      "code": "46",
+      "total": 84,
+      "count": 84,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KAHRAMANMARA%C5%9E&tur=okul&tur2=0",
+          "sha256": "c4d645864dc2563a5c433276c2941a438560547597fd824eca86becb995c7e8c"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KAHRAMANMARA%C5%9E&tur=okul&tur2=0",
+      "sha256": "c4d645864dc2563a5c433276c2941a438560547597fd824eca86becb995c7e8c"
+    },
+    {
+      "cityId": "tr-47",
+      "code": "47",
+      "total": 66,
+      "count": 66,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MARD%C4%B0N&tur=okul&tur2=0",
+          "sha256": "e99bf795f8f95872335e3f54af7f202ae4ef5c365f75992997f8d9a78a392362"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MARD%C4%B0N&tur=okul&tur2=0",
+      "sha256": "e99bf795f8f95872335e3f54af7f202ae4ef5c365f75992997f8d9a78a392362"
+    },
+    {
+      "cityId": "tr-48",
+      "code": "48",
+      "total": 167,
+      "count": 167,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MU%C4%9ELA&tur=okul&tur2=0",
+          "sha256": "667398633a9256f5c6724fdcc491d55ed3c0f947a65351118b57c64e04cc2dee"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MU%C4%9ELA&tur=okul&tur2=0",
+      "sha256": "667398633a9256f5c6724fdcc491d55ed3c0f947a65351118b57c64e04cc2dee"
+    },
+    {
+      "cityId": "tr-49",
+      "code": "49",
+      "total": 30,
+      "count": 30,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MU%C5%9E&tur=okul&tur2=0",
+          "sha256": "3faede83f456d0e84f63016cd059b74d73f6ae0217311c1260127b4c53e84a9f"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=MU%C5%9E&tur=okul&tur2=0",
+      "sha256": "3faede83f456d0e84f63016cd059b74d73f6ae0217311c1260127b4c53e84a9f"
+    },
+    {
+      "cityId": "tr-50",
+      "code": "50",
+      "total": 36,
+      "count": 36,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=NEV%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+          "sha256": "cac0b572fec2237b4014ce8dce51a59d478e814858e691a49fa04eeb2d1db4cf"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=NEV%C5%9EEH%C4%B0R&tur=okul&tur2=0",
+      "sha256": "cac0b572fec2237b4014ce8dce51a59d478e814858e691a49fa04eeb2d1db4cf"
+    },
+    {
+      "cityId": "tr-51",
+      "code": "51",
+      "total": 25,
+      "count": 25,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=N%C4%B0%C4%9EDE&tur=okul&tur2=0",
+          "sha256": "e9891c2a705d6de4e410a42823c845af4e4db92137a8702a64130753deb0e1bd"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=N%C4%B0%C4%9EDE&tur=okul&tur2=0",
+      "sha256": "e9891c2a705d6de4e410a42823c845af4e4db92137a8702a64130753deb0e1bd"
+    },
+    {
+      "cityId": "tr-52",
+      "code": "52",
+      "total": 65,
+      "count": 65,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ORDU&tur=okul&tur2=0",
+          "sha256": "67544aca8abc43b36fc97cff1f69ac8e7d0e3e067e76b32091437d9ad6e7a848"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ORDU&tur=okul&tur2=0",
+      "sha256": "67544aca8abc43b36fc97cff1f69ac8e7d0e3e067e76b32091437d9ad6e7a848"
+    },
+    {
+      "cityId": "tr-53",
+      "code": "53",
+      "total": 30,
+      "count": 30,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=R%C4%B0ZE&tur=okul&tur2=0",
+          "sha256": "eaf7ec45f08b599cfd91cb1fdd1a055f708c7aab49451f7fff6f71d38998b89e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=R%C4%B0ZE&tur=okul&tur2=0",
+      "sha256": "eaf7ec45f08b599cfd91cb1fdd1a055f708c7aab49451f7fff6f71d38998b89e"
+    },
+    {
+      "cityId": "tr-54",
+      "code": "54",
+      "total": 147,
+      "count": 147,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=SAKARYA&tur=okul&tur2=0",
+          "sha256": "7fb7dfff3c3a479b18bf896e1abd1ddf94df562b954076d87f523acf0c328f08"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=SAKARYA&tur=okul&tur2=0",
+      "sha256": "7fb7dfff3c3a479b18bf896e1abd1ddf94df562b954076d87f523acf0c328f08"
+    },
+    {
+      "cityId": "tr-55",
+      "code": "55",
+      "total": 218,
+      "count": 218,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=SAMSUN&tur=okul&tur2=0",
+          "sha256": "646dff6d00970360cb7d547026dd20149401240708fddb69d7bb2fb7b85f13b2"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=SAMSUN&tur=okul&tur2=0",
+      "sha256": "646dff6d00970360cb7d547026dd20149401240708fddb69d7bb2fb7b85f13b2"
+    },
+    {
+      "cityId": "tr-56",
+      "code": "56",
+      "total": 17,
+      "count": 17,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0%C4%B0RT&tur=okul&tur2=0",
+          "sha256": "17e6806bd3ebed10a6cdb6250364c4ca3eb8a360c73542dc0f939df1e59a6261"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0%C4%B0RT&tur=okul&tur2=0",
+      "sha256": "17e6806bd3ebed10a6cdb6250364c4ca3eb8a360c73542dc0f939df1e59a6261"
+    },
+    {
+      "cityId": "tr-57",
+      "code": "57",
+      "total": 16,
+      "count": 16,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0NOP&tur=okul&tur2=0",
+          "sha256": "954c4c757eebdfdcb6cce6f809a67e2be21acdeda40ab35eaf2ab45a665cdabd"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0NOP&tur=okul&tur2=0",
+      "sha256": "954c4c757eebdfdcb6cce6f809a67e2be21acdeda40ab35eaf2ab45a665cdabd"
+    },
+    {
+      "cityId": "tr-58",
+      "code": "58",
+      "total": 54,
+      "count": 54,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0VAS&tur=okul&tur2=0",
+          "sha256": "d50d63a7e13ffa46f431c52746a9508c23889b5233aab98a2018ec3102a7d546"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=S%C4%B0VAS&tur=okul&tur2=0",
+      "sha256": "d50d63a7e13ffa46f431c52746a9508c23889b5233aab98a2018ec3102a7d546"
+    },
+    {
+      "cityId": "tr-59",
+      "code": "59",
+      "total": 194,
+      "count": 194,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TEK%C4%B0RDA%C4%9E&tur=okul&tur2=0",
+          "sha256": "1afbf13ea2445b468690c57dd1825fd06ed757f1ecb61a926c01502ade819150"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TEK%C4%B0RDA%C4%9E&tur=okul&tur2=0",
+      "sha256": "1afbf13ea2445b468690c57dd1825fd06ed757f1ecb61a926c01502ade819150"
+    },
+    {
+      "cityId": "tr-60",
+      "code": "60",
+      "total": 42,
+      "count": 42,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TOKAT&tur=okul&tur2=0",
+          "sha256": "5a656e0b23e12b806f67a5324c303fcb8b2ab3b94e2f7a90d6b43265fbdf96e6"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TOKAT&tur=okul&tur2=0",
+      "sha256": "5a656e0b23e12b806f67a5324c303fcb8b2ab3b94e2f7a90d6b43265fbdf96e6"
+    },
+    {
+      "cityId": "tr-61",
+      "code": "61",
+      "total": 87,
+      "count": 87,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TRABZON&tur=okul&tur2=0",
+          "sha256": "9f31490c513bf3e35666d9db4f5fe24b1889ee5467eba79ea6fae84ab40c5655"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TRABZON&tur=okul&tur2=0",
+      "sha256": "9f31490c513bf3e35666d9db4f5fe24b1889ee5467eba79ea6fae84ab40c5655"
+    },
+    {
+      "cityId": "tr-62",
+      "code": "62",
+      "total": 4,
+      "count": 4,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TUNCEL%C4%B0&tur=okul&tur2=0",
+          "sha256": "e47ef1b326d241dcdfa39cd7ab1478befd05e96f705c995718405805ea8d5e2e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=TUNCEL%C4%B0&tur=okul&tur2=0",
+      "sha256": "e47ef1b326d241dcdfa39cd7ab1478befd05e96f705c995718405805ea8d5e2e"
+    },
+    {
+      "cityId": "tr-63",
+      "code": "63",
+      "total": 153,
+      "count": 153,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C5%9EANLIURFA&tur=okul&tur2=0",
+          "sha256": "2182790547e896d615cc29bdc1f0889100b635a264816ce7db09c784ebdfc557"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C5%9EANLIURFA&tur=okul&tur2=0",
+      "sha256": "2182790547e896d615cc29bdc1f0889100b635a264816ce7db09c784ebdfc557"
+    },
+    {
+      "cityId": "tr-64",
+      "code": "64",
+      "total": 55,
+      "count": 55,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=U%C5%9EAK&tur=okul&tur2=0",
+          "sha256": "96e11cbbd988130b8402d56a071f7c6de5cc9b3c5c5582cf814a02be2b2b8948"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=U%C5%9EAK&tur=okul&tur2=0",
+      "sha256": "96e11cbbd988130b8402d56a071f7c6de5cc9b3c5c5582cf814a02be2b2b8948"
+    },
+    {
+      "cityId": "tr-65",
+      "code": "65",
+      "total": 67,
+      "count": 67,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=VAN&tur=okul&tur2=0",
+          "sha256": "b5727f25c1a214e4ade11efc951508d9145bf09b4387469fb2a22501e8e8c992"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=VAN&tur=okul&tur2=0",
+      "sha256": "b5727f25c1a214e4ade11efc951508d9145bf09b4387469fb2a22501e8e8c992"
+    },
+    {
+      "cityId": "tr-66",
+      "code": "66",
+      "total": 18,
+      "count": 18,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=YOZGAT&tur=okul&tur2=0",
+          "sha256": "97318148fb3f2800a378a98e1536d3a00ab74ec3d39d8a98822f9af2cbf623f6"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=YOZGAT&tur=okul&tur2=0",
+      "sha256": "97318148fb3f2800a378a98e1536d3a00ab74ec3d39d8a98822f9af2cbf623f6"
+    },
+    {
+      "cityId": "tr-67",
+      "code": "67",
+      "total": 47,
+      "count": 47,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ZONGULDAK&tur=okul&tur2=0",
+          "sha256": "0fdc9c0f2f4b0854becaa3a2123986c2ef62b4074e79524ed2d9c0294504b01e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ZONGULDAK&tur=okul&tur2=0",
+      "sha256": "0fdc9c0f2f4b0854becaa3a2123986c2ef62b4074e79524ed2d9c0294504b01e"
+    },
+    {
+      "cityId": "tr-68",
+      "code": "68",
+      "total": 48,
+      "count": 48,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AKSARAY&tur=okul&tur2=0",
+          "sha256": "52624304ff7d571b3fc6dd44484528ed5dfb5012fb33b643b7f8b4d5878a6148"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=AKSARAY&tur=okul&tur2=0",
+      "sha256": "52624304ff7d571b3fc6dd44484528ed5dfb5012fb33b643b7f8b4d5878a6148"
+    },
+    {
+      "cityId": "tr-69",
+      "code": "69",
+      "total": 4,
+      "count": 4,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BAYBURT&tur=okul&tur2=0",
+          "sha256": "7328aac6a356f8576a2398e69194a666d6ade81bcd05114af97c42b16c63f71e"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BAYBURT&tur=okul&tur2=0",
+      "sha256": "7328aac6a356f8576a2398e69194a666d6ade81bcd05114af97c42b16c63f71e"
+    },
+    {
+      "cityId": "tr-70",
+      "code": "70",
+      "total": 29,
+      "count": 29,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARAMAN&tur=okul&tur2=0",
+          "sha256": "96f9a94bfe51f603dd2f185d8678e9073772868612b07377a2c40b6200759daa"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARAMAN&tur=okul&tur2=0",
+      "sha256": "96f9a94bfe51f603dd2f185d8678e9073772868612b07377a2c40b6200759daa"
+    },
+    {
+      "cityId": "tr-71",
+      "code": "71",
+      "total": 39,
+      "count": 39,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIRIKKALE&tur=okul&tur2=0",
+          "sha256": "7f3ba3662386d17892c757780d67a137e63ef8c8cf977df452aa77824bc5f534"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KIRIKKALE&tur=okul&tur2=0",
+      "sha256": "7f3ba3662386d17892c757780d67a137e63ef8c8cf977df452aa77824bc5f534"
+    },
+    {
+      "cityId": "tr-72",
+      "code": "72",
+      "total": 44,
+      "count": 44,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BATMAN&tur=okul&tur2=0",
+          "sha256": "837181a7536263010ee3f22e34c1ea9df251165f769121036a0c4d2b7413b054"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BATMAN&tur=okul&tur2=0",
+      "sha256": "837181a7536263010ee3f22e34c1ea9df251165f769121036a0c4d2b7413b054"
+    },
+    {
+      "cityId": "tr-73",
+      "code": "73",
+      "total": 28,
+      "count": 28,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C5%9EIRNAK&tur=okul&tur2=0",
+          "sha256": "4c7b99e30edef12c49d1b6f48a9513378e19c7f2b8bd97076f75fc2712e9da71"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=%C5%9EIRNAK&tur=okul&tur2=0",
+      "sha256": "4c7b99e30edef12c49d1b6f48a9513378e19c7f2b8bd97076f75fc2712e9da71"
+    },
+    {
+      "cityId": "tr-74",
+      "code": "74",
+      "total": 16,
+      "count": 16,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BARTIN&tur=okul&tur2=0",
+          "sha256": "fda4b4357ff5a87f93b9d4edaf83b36ab90743edfafcf4a14d3a2e4d09b540e9"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=BARTIN&tur=okul&tur2=0",
+      "sha256": "fda4b4357ff5a87f93b9d4edaf83b36ab90743edfafcf4a14d3a2e4d09b540e9"
+    },
+    {
+      "cityId": "tr-75",
+      "code": "75",
+      "total": 0,
+      "count": 0,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ARDAHAN&tur=okul&tur2=0",
+          "sha256": "bc476d0350e22f2a8caaf0a20a2c3dc8d3ff5e2d4e5536c7e932a779495f6f73"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=ARDAHAN&tur=okul&tur2=0",
+      "sha256": "bc476d0350e22f2a8caaf0a20a2c3dc8d3ff5e2d4e5536c7e932a779495f6f73"
+    },
+    {
+      "cityId": "tr-76",
+      "code": "76",
+      "total": 18,
+      "count": 18,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=I%C4%9EDIR&tur=okul&tur2=0",
+          "sha256": "13e2991d91c03a30d8385d90c780d160a837621601c34d6cc71539706745e623"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=I%C4%9EDIR&tur=okul&tur2=0",
+      "sha256": "13e2991d91c03a30d8385d90c780d160a837621601c34d6cc71539706745e623"
+    },
+    {
+      "cityId": "tr-77",
+      "code": "77",
+      "total": 48,
+      "count": 48,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=YALOVA&tur=okul&tur2=0",
+          "sha256": "f3e5e197c61d6b2d9d1ce35a866c3a7f360f9f28ca1057a431b2d33f06429b7c"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=YALOVA&tur=okul&tur2=0",
+      "sha256": "f3e5e197c61d6b2d9d1ce35a866c3a7f360f9f28ca1057a431b2d33f06429b7c"
+    },
+    {
+      "cityId": "tr-78",
+      "code": "78",
+      "total": 25,
+      "count": 25,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARAB%C3%9CK&tur=okul&tur2=0",
+          "sha256": "6de3fd7f3852021e171319dc7e5fd5a4e4d456f5a4c3396bdc1536e293710952"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=KARAB%C3%9CK&tur=okul&tur2=0",
+      "sha256": "6de3fd7f3852021e171319dc7e5fd5a4e4d456f5a4c3396bdc1536e293710952"
+    },
+    {
+      "cityId": "tr-79",
+      "code": "79",
+      "total": 13,
+      "count": 13,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=K%C4%B0L%C4%B0S&tur=okul&tur2=0",
+          "sha256": "4a73791b2346f253eea79ceade9ac3de0d81ad53fe1b54bc2a300423837b0da6"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=K%C4%B0L%C4%B0S&tur=okul&tur2=0",
+      "sha256": "4a73791b2346f253eea79ceade9ac3de0d81ad53fe1b54bc2a300423837b0da6"
+    },
+    {
+      "cityId": "tr-80",
+      "code": "80",
+      "total": 73,
+      "count": 73,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=OSMAN%C4%B0YE&tur=okul&tur2=0",
+          "sha256": "9466112750a24967d63fa9971c02a1808e765700f4151a668e3a550824c70a45"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=OSMAN%C4%B0YE&tur=okul&tur2=0",
+      "sha256": "9466112750a24967d63fa9971c02a1808e765700f4151a668e3a550824c70a45"
+    },
+    {
+      "cityId": "tr-81",
+      "code": "81",
+      "total": 59,
+      "count": 59,
+      "updatedAt": "18/09/2026 16:09",
+      "pages": [
+        {
+          "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=D%C3%9CZCE&tur=okul&tur2=0",
+          "sha256": "65fddf930cda778e6ca8bc8531e6f1c10c0c25ac28e5639d7557a0736b299dbd"
+        }
+      ],
+      "url": "https://ookgm.meb.gov.tr/kurumlar.php?il=D%C3%9CZCE&tur=okul&tur2=0",
+      "sha256": "65fddf930cda778e6ca8bc8531e6f1c10c0c25ac28e5639d7557a0736b299dbd"
+    }
+  ],
+  "capturedAt": "2026-10-04",
+  "includedCount": 12619,
+  "alreadyInPublicCatalogue": 0
+}
